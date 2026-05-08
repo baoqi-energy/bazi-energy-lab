@@ -1,0 +1,2033 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>今日命格 · 每日能量研究所</title>
+<style>
+  :root {
+    --bg: #f5f5f3;
+    --surface: #ffffff;
+    --surface2: #f0efec;
+    --border: #e2e0db;
+    --text-primary: #1a1a1a;
+    --text-secondary: #5a5a5a;
+    --text-muted: #9a9a9a;
+    --accent: #3b7dd8;
+    --accent-light: #eaf0fb;
+    --accent-dark: #2860b8;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --shadow: 0 2px 14px rgba(0,0,0,0.055);
+    --shadow-md: 0 4px 24px rgba(0,0,0,0.09);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ===== HEADER ===== */
+  .site-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow);
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--text-primary);
+    text-decoration: none;
+    letter-spacing: -0.3px;
+  }
+  .logo-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+  .nav-tabs { display: flex; gap: 4px; }
+  .nav-tab {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+    font-family: inherit;
+    font-weight: 500;
+  }
+  .nav-tab.active, .nav-tab:hover {
+    background: var(--accent-light);
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* ===== LAYOUT ===== */
+  .container { max-width: 860px; margin: 0 auto; padding: 32px 20px; }
+  .page-section { display: none; }
+  .page-section.active { display: block; }
+
+  /* ===== CARD ===== */
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 28px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+  .card-title { font-size: 17px; font-weight: 800; margin-bottom: 6px; }
+  .card-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6; }
+
+  /* ===== HERO ===== */
+  .hero { text-align: center; padding: 44px 20px 28px; }
+  .hero-badge {
+    display: inline-block;
+    background: var(--accent-light);
+    color: var(--accent);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    letter-spacing: 1.5px;
+  }
+  .hero h1 {
+    font-size: clamp(22px, 5vw, 34px);
+    font-weight: 900;
+    line-height: 1.35;
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+  }
+  .hero p { font-size: 14px; color: var(--text-secondary); max-width: 480px; margin: 0 auto 32px; line-height: 1.75; }
+
+  /* ===== FORM ===== */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .nav-tab { padding: 6px 10px; font-size: 12px; }
+    .modules-grid { grid-template-columns: 1fr; }
+    .bazi-grid { grid-template-columns: repeat(4,1fr); }
+  }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.full { grid-column: 1/-1; }
+  .form-label { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+  .form-input, .form-select {
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-family: inherit;
+    background: var(--surface);
+    color: var(--text-primary);
+    transition: border 0.2s;
+    outline: none;
+  }
+  .form-input:focus, .form-select:focus { border-color: var(--accent); }
+  .form-hint { font-size: 12px; color: var(--text-muted); }
+
+  /* ===== BUTTON ===== */
+  .btn {
+    padding: 12px 28px;
+    border-radius: 40px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+    transition: all 0.2s;
+    letter-spacing: 0.2px;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(59,125,216,0.22);
+  }
+  .btn-primary:hover { background: var(--accent-dark); transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-block { width: 100%; margin-top: 8px; }
+  .btn-outline {
+    background: transparent;
+    color: var(--accent);
+    border: 1.5px solid var(--accent);
+  }
+  .btn-outline:hover { background: var(--accent-light); }
+
+  /* ===== RESULT ===== */
+  #result-section { display: none; }
+  .result-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+  .avatar-ring {
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    border: 2px solid rgba(59,125,216,0.25);
+  }
+  .result-name { font-size: 19px; font-weight: 800; }
+  .result-sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+  .result-date { font-size: 13px; color: var(--accent); font-weight: 600; margin-top: 4px; }
+
+  /* ===== 年龄共情条 ===== */
+  .age-empathy {
+    background: #f8f6f2;
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    margin-bottom: 18px;
+    border-left: 3px solid var(--accent);
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+  .age-empathy strong { color: var(--text-primary); }
+
+  /* ===== 命格标签 ===== */
+  .minge-tag {
+    display: inline-block;
+    background: var(--accent-light);
+    color: var(--accent);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-left: 10px;
+    vertical-align: middle;
+  }
+  .minge-tag.zhuanwang { background: #f5eaea; color: #b84040; }
+  .minge-tag.congge { background: #eaf2ea; color: #3a7a3a; }
+
+  /* ===== BAZI DISPLAY ===== */
+  .bazi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 18px; }
+  .bazi-col {
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    padding: 12px 8px;
+    text-align: center;
+  }
+  .bazi-col-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; letter-spacing: 1px; }
+  .bazi-col-gan { font-size: 22px; font-weight: 900; }
+  .bazi-col-zhi { font-size: 20px; font-weight: 700; color: var(--text-secondary); margin-top: 2px; }
+  .bazi-col-wx {
+    font-size: 11px; font-weight: 600;
+    margin-top: 4px; padding: 2px 6px;
+    border-radius: 10px; display: inline-block;
+  }
+  .wx-mu { background: #eaf2ea; color: #3a7a3a; }
+  .wx-huo { background: #f5eaea; color: #b84040; }
+  .wx-tu { background: #f5f1ea; color: #8a6428; }
+  .wx-jin { background: #f0f0f0; color: #505050; }
+  .wx-shui { background: #eaf0f8; color: #2a5aa0; }
+
+  /* ===== XIYONG ===== */
+  .xiyong-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; align-items: center; }
+  .xiyong-label { font-size: 13px; color: var(--text-muted); }
+  .xiyong-tag { padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; }
+  .xiyong-tag.xi { background: var(--accent-light); color: var(--accent); }
+  .xiyong-tag.ji { background: #f5eaea; color: #b84040; }
+
+  /* ===== TODAY VIBE ===== */
+  .today-vibe {
+    background: #f2f4f8;
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    border: 1px solid #dde4ef;
+  }
+  .today-vibe-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #6a82aa;
+    margin-bottom: 8px;
+    letter-spacing: 1.5px;
+  }
+  .today-vibe-text {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.75;
+    color: var(--text-primary);
+  }
+
+  /* ===== MODULES ===== */
+  .modules-grid {
+    display: flex; gap: 16px; margin-bottom: 20px;
+    align-items: stretch; min-height: 420px;
+  }
+  .modules-left { flex: 1.1; min-width: 0; display: flex; flex-direction: column; }
+  .modules-left .module-card { flex: 1; min-height: 0; }
+  .modules-right {
+    flex: 0.9; min-width: 0;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .modules-right .module-card {
+    flex: 0 1 auto;
+    display: flex; flex-direction: column;
+    justify-content: flex-start;
+  }
+  .module-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    display: flex; flex-direction: column;
+  }
+  .module-icon {
+    width: 36px; height: 36px;
+    margin-bottom: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .module-icon svg { width: 28px; height: 28px; }
+  .module-title { font-size: 14px; font-weight: 800; color: var(--text-primary); margin-bottom: 10px; }
+  .module-content { font-size: 14px; color: var(--text-secondary); line-height: 1.8; flex: 1; overflow-wrap: break-word; }
+  .module-highlight {
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    padding: 9px 13px;
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  /* ===== 天气标签 ===== */
+  .weather-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #edf2fb;
+    color: #4a6fa8;
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  /* ===== DIVIDER ===== */
+  .divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 24px 0 16px;
+    color: var(--text-muted); font-size: 12px; letter-spacing: 1px;
+  }
+  .divider::before, .divider::after { content:''; flex:1; height:1px; background: var(--border); }
+
+  /* ===== 今日能量碎片 ===== */
+  .energy-strip { display: flex; gap: 10px; flex-wrap: wrap; }
+  .energy-item {
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    padding: 9px 14px;
+    font-size: 13px;
+    display: flex; align-items: center; gap: 8px;
+    color: var(--text-secondary);
+    flex: 1; min-width: 180px;
+    line-height: 1.5;
+  }
+  .energy-item svg { flex-shrink: 0; }
+
+  /* ===== 断舍离 ===== */
+  .dongshelj-list { list-style: none; }
+  .dongshelj-list li {
+    padding: 9px 0; border-bottom: 1px solid var(--border);
+    font-size: 14px; color: var(--text-secondary);
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .dongshelj-list li:last-child { border-bottom: none; }
+  .dongshelj-icon { flex-shrink: 0; margin-top: 1px; }
+
+  /* ===== FOOTER ===== */
+  .site-footer {
+    text-align: center; padding: 32px 20px;
+    font-size: 12px; color: var(--text-muted);
+    border-top: 1px solid var(--border); margin-top: 20px;
+  }
+  .footer-note { max-width: 480px; margin: 6px auto 0; line-height: 1.7; }
+
+  /* ===== LOADING / TOAST ===== */
+  .loading-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(245,245,243,0.88); z-index: 999;
+    align-items: center; justify-content: center; flex-direction: column; gap: 16px;
+  }
+  .loading-overlay.show { display: flex; }
+  .loading-spinner {
+    width: 38px; height: 38px;
+    border: 3px solid var(--border); border-top-color: var(--accent);
+    border-radius: 50%; animation: spin 0.85s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-size: 14px; color: var(--text-secondary); font-weight: 600; }
+  .toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #1a1a1a; color: #fff;
+    padding: 10px 22px; border-radius: 40px; font-size: 14px;
+    z-index: 9999; transition: transform 0.3s; white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ===== ABOUT ===== */
+  .about-content { font-size: 15px; color: var(--text-secondary); line-height: 1.9; }
+  .about-content h3 { font-size: 16px; font-weight: 800; color: var(--text-primary); margin: 20px 0 8px; }
+  .about-content p { margin-bottom: 10px; }
+  .about-content .quote {
+    border-left: 3px solid var(--accent); padding-left: 16px;
+    color: var(--text-primary); font-style: italic; margin: 16px 0; font-size: 16px;
+  }
+
+  /* ===== 天气获取状态 ===== */
+  #weather-status { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+
+  /* ===== 今天/明天切换Tab ===== */
+  .result-tabs { display: flex; gap: 6px; margin-bottom: 20px; }
+  .result-tab {
+    padding: 6px 18px; border-radius: 20px; font-size: 13px;
+    cursor: pointer; border: 1.5px solid var(--border);
+    background: transparent; color: var(--text-secondary);
+    font-family: inherit; font-weight: 600; transition: all 0.2s;
+  }
+  .result-tab.active, .result-tab:hover {
+    background: var(--accent-light); color: var(--accent); border-color: var(--accent);
+  }
+
+  /* ===== 明日（与今日共用 card / modules-grid 样式） ===== */
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loading">
+  <div class="loading-spinner"></div>
+  <div class="loading-text" id="loading-text">正在排盘，一会儿就好…</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<!-- HEADER -->
+<header class="site-header">
+  <a class="logo" href="#" onclick="switchPage('home')">
+    <div class="logo-dot"></div>今日命格
+  </a>
+  <nav class="nav-tabs">
+    <button class="nav-tab active" onclick="switchPage('home')" id="tab-home">每日运势</button>
+    <button class="nav-tab" onclick="switchPage('about')" id="tab-about">关于</button>
+  </nav>
+</header>
+
+<!-- ============ HOME ============ -->
+<div class="page-section active" id="page-home">
+  <div class="container">
+    <div class="hero">
+      <div class="hero-badge">✦ 每日能量研究所</div>
+      <h1>不算命，只是今天<br>你需要一点方向感</h1>
+      <p>不承诺你六个月后发财，也没有水晶手串可以推销。<br>只是用八字的五行逻辑，给你一些今天就能用上的小建议。</p>
+    </div>
+
+    <!-- FORM -->
+    <div class="card" id="form-card">
+      <div class="card-title">告诉我一点关于你的事</div>
+      <div class="card-subtitle">生辰信息只在本地计算，不上传，不储存，只服务于今天的你。</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">出生年</label>
+          <select class="form-select" id="birth-year"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">出生月<span style="font-size:11px;color:#3b7dd8;font-weight:600;margin-left:4px;font-style:italic;">（公历，就是阳历！）</span></label>
+          <select class="form-select" id="birth-month"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">出生日</label>
+          <select class="form-select" id="birth-day"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">出生时辰</label>
+          <select class="form-select" id="birth-hour">
+            <option value="0">子时（23:00-01:00）</option>
+            <option value="2">丑时（01:00-03:00）</option>
+            <option value="4">寅时（03:00-05:00）</option>
+            <option value="6">卯时（05:00-07:00）</option>
+            <option value="8">辰时（07:00-09:00）</option>
+            <option value="10">巳时（09:00-11:00）</option>
+            <option value="12">午时（11:00-13:00）</option>
+            <option value="14">未时（13:00-15:00）</option>
+            <option value="16">申时（15:00-17:00）</option>
+            <option value="18">酉时（17:00-19:00）</option>
+            <option value="20">戌时（19:00-21:00）</option>
+            <option value="22">亥时（21:00-23:00）</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">当前所在城市<span style="font-size:11px;color:#3b7dd8;font-weight:600;margin-left:4px;">（请打字输入所在市）</span></label>
+          <input class="form-input" id="current-place" placeholder="例：赤峰、北京、成都" oninput="onCityInput()" />
+          <span id="weather-status"></span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">性别</label>
+          <select class="form-select" id="gender">
+            <option value="female">女</option>
+            <option value="male">男</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="calculate()">✦ 看看今天适合做什么</button>
+    </div>
+
+    <!-- RESULT -->
+    <div id="result-section">
+      <!-- 今天/明天切换Tab -->
+      <div class="result-tabs" id="result-tabs" style="display:none;">
+        <button class="result-tab active" id="tab-today" onclick="switchResultDay('today')">今天</button>
+        <button class="result-tab" id="tab-tomorrow" onclick="switchResultDay('tomorrow')">明天</button>
+      </div>
+      <div id="result-today">
+      <div class="card">
+        <div class="result-header">
+          <div class="avatar-ring" id="result-icon">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#3b7dd8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="14" cy="14" r="5"/>
+              <line x1="14" y1="2" x2="14" y2="6"/>
+              <line x1="14" y1="22" x2="14" y2="26"/>
+              <line x1="2" y1="14" x2="6" y2="14"/>
+              <line x1="22" y1="14" x2="26" y2="14"/>
+              <line x1="5.5" y1="5.5" x2="8.3" y2="8.3"/>
+              <line x1="19.7" y1="19.7" x2="22.5" y2="22.5"/>
+              <line x1="22.5" y1="5.5" x2="19.7" y2="8.3"/>
+              <line x1="8.3" y1="19.7" x2="5.5" y2="22.5"/>
+            </svg>
+          </div>
+          <div>
+            <div class="result-name" id="result-title">你的命格</div>
+            <div class="result-sub" id="result-bazi-str"></div>
+            <div class="result-date" id="result-today-str"></div>
+          </div>
+        </div>
+
+        <!-- 年龄共情 -->
+        <div class="age-empathy" id="age-empathy"></div>
+
+        <!-- 八字 -->
+        <div class="bazi-grid" id="bazi-display"></div>
+        <!-- 喜忌 -->
+        <div class="xiyong-row" id="xiyong-row"></div>
+        <!-- 今日能量速报 -->
+        <div class="today-vibe" id="today-vibe"></div>
+      </div>
+
+      <!-- 模块 -->
+      <div class="modules-grid" id="modules-grid"></div>
+      <!-- 今日能量碎片 -->
+      <div class="card" id="energy-card"></div>
+      <!-- 断舍离 -->
+      <div class="card" id="dongshelj-card"></div>
+      </div><!-- /result-today -->
+      <div id="result-tomorrow" style="display:none;"></div>
+
+      <div style="text-align:center;margin-top:8px;">
+        <button class="btn btn-outline" onclick="resetForm()">← 换一个人算算</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ABOUT ============ -->
+<div class="page-section" id="page-about">
+  <div class="container">
+    <div class="card">
+      <div class="card-title">关于这个地方</div>
+      <div class="about-content">
+        <div class="quote">"我们不算命。我们只是帮你把今天过得好一点。"</div>
+        <h3>为什么会有这个网站？</h3>
+        <p>互联网上有太多命理网站，告诉你"三个月后你要发大财"，或者"速速化解，请购买本站开光手串"。我们觉得这些都是废话——真正有用的，是今天穿什么颜色出门心情会更好，今天吃什么食物身体更舒服，今天情绪容易波动时该看哪部让你笑出来的剧。</p>
+        <h3>我们用什么逻辑？</h3>
+        <p>基于传统八字命理中的五行喜用神体系，结合当日天干地支，推算个人当日的能量状态。五行不是玄学，它本质上是一套<strong>描述平衡的语言</strong>。喜木的人，适合绿色植物、春天的活动；喜水的人，今天就是适合喝更多水、接触蓝色、安静待着。这些建议背后有逻辑，不是随机生成的。</p>
+        <h3>关于命格判断</h3>
+        <p>我们支持普通命格（身强/身弱）、专旺格、从格的判断。专旺格是指日主五行力量极强且克日主的五行几乎为零的特殊格局，喜用神的取法与普通格局不同。从格是指日主极弱，整个八字被某一种五行主导，需要顺势而为。</p>
+        <h3>我们不许做的事</h3>
+        <p>✗ 不许说"速速购买化解"<br>✗ 不许承诺"六个月后发财"<br>✗ 不许把用户当韭菜<br>✓ 只给切实可行的今日建议</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div>今日命格 · 每日能量研究所</div>
+  <div class="footer-note">所有计算在本地完成，不收集、不存储任何个人信息。命理仅供参考，生活的主导权永远在你自己手里。</div>
+</footer>
+
+<!-- ============ SVG 图标库 ============ -->
+<svg style="display:none" id="svg-defs">
+  <defs>
+    <symbol id="icon-clothes" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 4L4 8l3 2v12h14V10l3-2-5-4"/>
+      <path d="M9 4c0 2.8 2 4 5 4s5-1.2 5-4"/>
+    </symbol>
+    <symbol id="icon-food" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 6v6c0 3.3 2.7 6 6 6h1v4h2v-4h1c3.3 0 6-2.7 6-6V6"/>
+      <line x1="5" y1="10" x2="21" y2="10"/>
+      <line x1="23" y1="6" x2="23" y2="22"/>
+    </symbol>
+    <symbol id="icon-drama" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="7" width="22" height="15" rx="2"/>
+      <line x1="9" y1="25" x2="19" y2="25"/>
+      <line x1="14" y1="22" x2="14" y2="25"/>
+      <polygon points="11,11 11,18 18,14.5" fill="currentColor" stroke="none"/>
+    </symbol>
+    <symbol id="icon-music" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 16v-3a8 8 0 0 1 16 0v3"/>
+      <rect x="3" y="16" width="5" height="7" rx="2"/>
+      <rect x="20" y="16" width="5" height="7" rx="2"/>
+    </symbol>
+    <symbol id="icon-broom" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="3" x2="12" y2="14"/>
+      <line x1="8" y1="14" x2="16" y2="14"/>
+      <path d="M7 14 L9 22 L12 20 L15 22 L17 14"/>
+    </symbol>
+    <symbol id="icon-leaf" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 22c0 0 2-10 10-14 6-3 10-2 10-2s1 4-2 8c-4 5-14 8-14 8z"/>
+      <line x1="6" y1="22" x2="14" y2="14"/>
+    </symbol>
+    <symbol id="icon-cup" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 8h13l-2 12H8z"/>
+      <path d="M19 10h2a3 3 0 0 1 0 6h-2"/>
+      <line x1="5" y1="21" x2="23" y2="21"/>
+    </symbol>
+    <symbol id="icon-mail" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="7" width="22" height="16" rx="2"/>
+      <polyline points="3,7 14,16 25,7"/>
+    </symbol>
+    <symbol id="icon-window" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="4" y="4" width="20" height="20" rx="2"/>
+      <line x1="14" y1="4" x2="14" y2="24"/>
+      <line x1="4" y1="14" x2="24" y2="14"/>
+    </symbol>
+  </defs>
+</svg>
+
+<script>
+// ============================================================
+// SVG 图标辅助
+// ============================================================
+function svgIcon(id, color='#1a1a1a', size=28) {
+  return `<svg width="${size}" height="${size}" fill="none"><use href="#${id}" color="${color}" stroke="${color}"/></svg>`;
+}
+
+// ============================================================
+// 数据
+// ============================================================
+const GAN = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const ZHI = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const GAN_WX = ['木','木','火','火','土','土','金','金','水','水'];
+const ZHI_WX = ['水','土','木','木','土','火','火','土','金','金','土','水'];
+const ZHI_HIDDEN = {
+  '子':['癸'],'丑':['己','癸','辛'],'寅':['甲','丙','戊'],'卯':['乙'],
+  '辰':['戊','乙','癸'],'巳':['丙','庚','戊'],'午':['丁','己'],'未':['己','丁','乙'],
+  '申':['庚','壬','戊'],'酉':['辛'],'戌':['戊','辛','丁'],'亥':['壬','甲']
+};
+const WX_COLOR_CLASS = {'木':'wx-mu','火':'wx-huo','土':'wx-tu','金':'wx-jin','水':'wx-shui'};
+
+const WX_COLORS = {
+  '木': ['森林绿','豆绿','薄荷绿','竹青','橄榄绿'],
+  '火': ['砖红','珊瑚橙','暖粉','番茄红','玫瑰红'],
+  '土': ['燕麦色','驼色','沙棕','奶茶色','焦糖色'],
+  '金': ['白色','银灰','珍珠白','浅卡其','米白'],
+  '水': ['深蓝灰','藏青','烟灰蓝','墨蓝','炭黑']
+};
+// 搭配色：喜A时，主色用A的颜色，搭配色用与喜用不冲突的色
+// 规则：搭配色绝对不能是忌神五行对应的颜色
+// 木=绿 火=红/暖 土=黄棕/米 金=白/银 水=黑/深蓝
+const WX_PAIR_COLORS = {
+  '木': { main:'绿色系上衣', pair:'米色或浅卡其色下装', hint:'绿色配大地色，自然又舒服' },
+  '火': { main:'红色或暖橙色上衣', pair:'米色或驼色下装', hint:'暖色配大地色，整个人亮起来' },
+  '土': { main:'驼色或奶茶色上衣', pair:'米白色或浅卡其色下装', hint:'大地色系，温柔又不出错' },
+  '金': { main:'白色或银灰色上衣', pair:'浅米色或奶茶色下装', hint:'白上米下，干净利落' },
+  '水': { main:'深蓝或藏青色上衣', pair:'浅灰色或米白色下装', hint:'深色配浅色，安静但有质感' }
+};
+const WX_MATERIALS = {
+  '木': ['棉麻','亚麻','纯棉','竹纤维'],
+  '火': ['真丝','雪纺','莫代尔','轻薄针织'],
+  '土': ['纯棉针织','羊绒','法兰绒','灯芯绒'],
+  '金': ['棉质衬衫料','丝光棉','缎面','亚麻混纺'],
+  '水': ['牛仔','深色棉布','针织','防风面料']
+};
+const WX_FOODS = {
+  '木': [
+    '韭菜鸡蛋饼','凉拌黄瓜','青椒炒肉','芹菜炒香干','豌豆苗炒蘑菇','西兰花炒虾仁',
+    '菠菜拌花生米','韭菜盒子','蒜蓉西兰花','香椿炒鸡蛋','莴笋炒肉片','荷兰豆炒虾仁',
+    '凉拌木耳黄瓜','蒜薹炒肉丝','芦笋炒百合','苦瓜炒蛋','四季豆焖面','豆角焖排骨',
+    '芹菜猪肉饺子','韭菜猪肉水饺','菠菜猪肝汤','西兰花浓汤','油焖春笋','蒜蓉油麦菜',
+    '凉拌西兰花','丝瓜蛋汤','素炒豌豆尖','蒜蓉蒸茄子','凉拌莴笋丝','青椒土豆丝'
+  ],
+  '火': [
+    '番茄炒蛋盖浇饭','红豆薏米粥','红烧肉配米饭','草莓酸奶','红糖糍粑','胡萝卜玉米排骨汤',
+    '糖醋排骨','西红柿鸡蛋面','枸杞红枣粥','南瓜红豆汤','胡萝卜炒肉丝','番茄牛腩',
+    '糖醋里脊','蜜汁叉烧','红枣桂圆粥','烤红薯配蜂蜜','辣椒炒鸡蛋','麻婆豆腐',
+    '番茄浓汤','红酒炖牛肉','红烧鸡翅','草莓大福','红糖姜茶','南瓜饼',
+    '番茄巴沙鱼','胡萝卜蛋糕','孜然羊肉','烤茄子','蜜汁鸡翅','番茄蛋花汤',
+    '小米椒炒鸡胗','干辣椒炒腊肉','红烧牛肉面','糖醋鱼块','番茄炖牛腩','枣泥山药糕'
+  ],
+  '土': [
+    '土豆炖南瓜','小米南瓜粥','玉米排骨汤','红薯蒸饭','山药木耳炒肉','土豆泥沙拉',
+    '小米粥配咸鸭蛋','玉米面馒头','山药排骨汤','红薯银耳羹','板栗烧鸡','南瓜发糕',
+    '土豆烧牛肉','玉米鸡蛋羹','山药炒木耳','红薯糯米粥','芋头蒸排骨','南瓜饼配豆浆',
+    '小米糕','土豆咖喱','玉米炒虾仁','山药红枣粥','红薯丸子','土豆焖饭',
+    '板栗焖鸡','南瓜小米粥','山药枸杞汤','玉米烙','芋泥波波','土豆炖牛腩',
+    '小米海参粥','山药炒肉片','红薯银耳羹','板栗炖猪蹄','南瓜浓汤','土豆沙拉'
+  ],
+  '金': [
+    '白萝卜羊肉汤','清蒸鲈鱼','莲藕排骨汤','冬瓜虾仁汤','银耳莲子羹','百合炒芦笋',
+    '白果炖老母鸡','山药百合粥','白灼虾','清蒸扇贝','冬瓜老鸭汤','百合雪梨羹',
+    '杏仁豆腐','白萝卜炖牛腩','银耳雪梨汤','白灼秋葵','百合南瓜粥','莲子木瓜羹',
+    '白切鸡','清蒸多宝鱼','冬瓜蛤蜊汤','杏仁露','白灼生菜','百合银耳粥',
+    '白萝卜猪骨汤','清蒸白鱼','莲藕花生汤','银耳木瓜羹','百合莲子汤','白果腐竹糖水',
+    '白灼基围虾','冬瓜肉丸汤','白萝卜丝鲫鱼汤','莲子银耳露','百合山药羹','雪梨银耳盅'
+  ],
+  '水': [
+    '黑芝麻糊','紫菜蛋花汤','黑豆浆','海带炖排骨','乌鸡汤','蓝莓燕麦碗',
+    '紫薯银耳羹','海带豆腐汤','黑木耳炒肉片','黑米粥','紫菜馄饨','海带冬瓜汤',
+    '黑豆猪骨汤','蓝莓酸奶碗','紫薯山药粥','墨鱼炖鸡汤','黑木耳红枣汤','黑芝麻汤圆',
+    '紫菜包饭','海带排骨汤','黑森林蛋糕','紫甘蓝沙拉','海米冬瓜','黑豆排骨汤',
+    '紫菜豆腐羹','海带拌木耳','黑木耳炒山药','黑芝麻花卷','紫薯牛奶','蓝莓 muffin',
+    '黑米八宝粥','海带蛤蜊汤','紫菜汤面','黑芝麻花生糊','乌梅汤','黑木耳拌洋葱'
+  ]
+};
+
+// 饮食忌神详细建议（具体食材）
+const JINJI_FOOD_DETAIL = {
+  '木': {
+    avoid: '生冷蔬菜、凉拌菜、酸味食物（醋、柠檬、番茄酱）',
+    examples: '比如凉拌黄瓜、酸辣粉、柠檬鸡、醋溜白菜',
+    ending: ['今天让胃暖一点，少吃冷的东西，身体会感谢你。','生冷的东西今天绕道走吧，给身体放个假。','今天的你不太适合跟酸味较劲，绕开它，一天都舒服。']
+  },
+  '火': {
+    avoid: '辛辣刺激的食物（辣椒、花椒、火锅底料、重辣烧烤）',
+    examples: '比如麻辣火锅、辣子鸡、水煮鱼、变态辣烤翅',
+    ending: ['今天少吃辣，胃不闹脾气，你也不闹心。','火气大的时候吃辣是火上浇油，换个口味吧。','管住辣嘴，今天你会发现心情比平时稳很多。']
+  },
+  '土': {
+    avoid: '过甜过腻的甜点、高糖饮料、糯米类食物',
+    examples: '比如奶茶、蛋糕、汤圆、甜甜圈、红糖糍粑',
+    ending: ['今天少吃甜的，你会发现脑子清醒了不少。','甜食虽然治愈，但今天留给咸口的饭菜更靠谱。','糖分太高容易犯困，今天保持清醒最重要。']
+  },
+  '金': {
+    avoid: '辛味食物和白色食物（葱、姜、蒜、白萝卜、豆腐、银耳）',
+    examples: '比如蒜蓉系列、葱油拌面、白萝卜汤、豆腐脑',
+    ending: ['今天白色和辛味的食物先放一放，选点有颜色的菜。','少碰葱蒜和豆腐类，给身体一个不一样的体验。','避开白色食物的一天，你会发现自己能接受很多新口味。']
+  },
+  '水': {
+    avoid: '生冷食物、冰饮、寒凉水果（西瓜、梨、柿子、海鲜生食）',
+    examples: '比如冰啤酒、冰西瓜、生鱼片、凉拌海鲜、冰镇饮料',
+    ending: ['今天少碰冰的东西，喝温水就够了，暖着过。','生冷食物今天是你的克星，给自己倒杯热水比什么都强。','寒凉伤脾胃，今天对自己温柔一点，不吃凉的。']
+  }
+};
+
+// 剧集库（按情绪，why 只写真实感受，不杜撰台词/剧情）
+const DRAMA_DB = {
+  '情绪化': [
+    { name:'《甄嬛传》', ep:'第54集', why:'这集气氛拉满，看完胸口那口气顺了' },
+    { name:'《武林外传》', ep:'第40集', why:'笑到停不下来，情绪垃圾自动清空' },
+    { name:'《都挺好》', ep:'第31集', why:'苏明玉这段太解气了，看完比心理咨询还管用' },
+    { name:'《欢乐颂》', ep:'第10集', why:'安迪那段独白，看完心里莫名踏实了' },
+    { name:'《三十而已》', ep:'第19集', why:'顾佳那段太带劲了，看完心情莫名其妙好了' },
+    { name:'《我在他乡挺好的》', ep:'第11集', why:'看完想给所有独自在外的朋友发个消息' },
+    { name:'《知否知否》', ep:'第68集', why:'明兰大反击那几集，看一百遍都不会腻' },
+    { name:'《回家的诱惑》', ep:'第15集', why:'古早味爽剧，看的就是那个畅快淋漓' },
+    { name:'《狂飙》', ep:'第13集', why:'高启强黑化过程，情绪跟着起伏特别解压' },
+    { name:'《漫长的季节》', ep:'第10集', why:'情绪化的时候看，会觉得自己那点事没那么大' },
+    { name:'《小舍得》', ep:'第12集', why:'中国式家庭的拧巴，看完你会原谅自己的焦虑' },
+    { name:'《小敏家》', ep:'第8集', why:'中年人的感情和生活，看着看着就释怀了' },
+    { name:'《今生也是第一次》', ep:'第5集', why:'三个时代女性的生育故事，情绪化时看特别共鸣' },
+    { name:'《爱很美味》', ep:'第6集', why:'三个女生的真实生活，笑着笑着就懂了' },
+    { name:'《叹息桥》', ep:'第8集', why:'港剧的细腻，情绪化时看特别有代入感' },
+    { name:'《隐入尘烟》', ep:'正片', why:'慢到极致，情绪化的那股劲儿会被慢慢化开' },
+    { name:'《你好，李焕英》', ep:'正片', why:'笑到哭，情绪有个出口比憋着强一百倍' },
+    { name:'《少年的你》', ep:'正片', why:'情绪化的时候看，会庆幸自己已经熬过了那段日子' },
+    { name:'《霸王别姬》', ep:'正片', why:'程蝶衣的执念，看完你会觉得自己那点情绪不算什么' },
+    { name:'《大佛普拉斯》', ep:'正片', why:'黑色幽默，小人物的无奈，看完会笑中带泪' },
+    { name:'《深海》', ep:'正片', why:'画面美到窒息，情绪化的那股气会被色彩融化' },
+    { name:'《爱情神话》', ep:'正片', why:'上海中年人的感情生活，看完觉得自己那点事真不大' },
+    { name:'《我的姐姐》', ep:'正片', why:'姐姐还是姑姑还是自己，看完你会想抱抱自己' }
+  ],
+  '焦虑': [
+    { name:'《父母爱情》', ep:'第1-3集', why:'江德福和安杰踏踏实实的日子，看久了心会安下来' },
+    { name:'《知否知否》', ep:'第22集', why:'明兰处事的稳重，会让你也想安静下来想清楚自己的事' },
+    { name:'《人世间》', ep:'第8集', why:'普通人的命运跌宕，看完会重新理解"踏实"两个字' },
+    { name:'《大江大河》', ep:'第5集', why:'宋运辉那种闷头做事的劲头，看久了你也不焦虑了' },
+    { name:'《山海情》', ep:'第3集', why:'西北人的韧劲，看完觉得自己的焦虑其实很小' },
+    { name:'《鸡毛飞上天》', ep:'第5集', why:'义乌人的创业史，踏实做事的人最动人' },
+    { name:'《乔家的儿女》', ep:'第8集', why:'普通家庭的柴米油盐，看完不焦虑了' },
+    { name:'《我们的日子》', ep:'第6集', why:'东北老工业基地的人情味，暖到心坎里' },
+    { name:'《金婚》', ep:'第10集', why:'一辈子那么长，眼下的焦虑只是其中一小段' },
+    { name:'《媳妇的美好时代》', ep:'第5集', why:'家常里短看完，会觉得生活本来就是这样的' },
+    { name:'《请回答1988》', ep:'第11集', why:'韩剧里的邻里温情，看完特别想回家' },
+    { name:'《小森林·夏秋篇》', ep:'正片', why:'日式治愈，没有大起大落，看完心静了' },
+    { name:'《小森林·冬春篇》', ep:'正片', why:'自己种自己吃，焦虑在烟火气里散了' },
+    { name:'《海蒂和爷爷》', ep:'正片', why:'阿尔卑斯山的风景和单纯的故事，看完心都化了' },
+    { name:'《触不可及》', ep:'正片', why:'法国电影，残疾富翁和穷小子的友情，笑中带泪' },
+    { name:'《白日梦想家》', ep:'正片', why:'冰岛风景美到窒息，看完想去远方走一走' },
+    { name:'《心灵捕手》', ep:'正片', why:'那个"不是你的错"的拥抱，看完会哭一场' },
+    { name:'《婚姻故事》', ep:'正片', why:'看完会觉得，自己的焦虑关系里都有，不是你一个人' },
+    { name:'《小妇人》', ep:'正片', why:'四种不同的人生选择，看完会接纳自己的节奏' },
+    { name:'《再次出发》', ep:'正片', why:'纽约街头音乐人的故事，治愈又不做作' },
+    { name:'《夏至未至》', ep:'第8集', why:'青春回忆杀，看完觉得现在的焦虑都是暂时的' },
+    { name:'《最好的我们》', ep:'第6集', why:'高中时代的单纯，看完心情会轻很多' },
+    { name:'《请回答1994》', ep:'第16集', why:'韩剧，首尔大学生活，看完觉得青春真好' }
+  ],
+  '低落': [
+    { name:'《甄嬛传》', ep:'第17集', why:'甄嬛风头最盛的时候，一起跟着爽，低落立刻散' },
+    { name:'《我爱我家》', ep:'第28集', why:'贾志国的荒唐和老傅的优雅，对比太可乐了' },
+    { name:'《武林外传》', ep:'第17集', why:'这集的梗到现在还能笑出来，低落什么的不存在的' },
+    { name:'《家有儿女》', ep:'第45集', why:'刘星永远是快乐的来源，看五分钟心情就回来了' },
+    { name:'《庆余年》', ep:'第27集', why:'范闲的破局方式总是出人意料，看完特别提气' },
+    { name:'《亮剑》', ep:'第8集', why:'李云龙那句"二营长你他娘的意大利炮呢"，燃到低落都跑了' },
+    { name:'《赘婿》', ep:'第18集', why:'轻松搞笑又有反转，看完低落直接翻篇' },
+    { name:'《唐朝诡事录》', ep:'第5集', why:'悬疑节奏很紧凑，看完脑子里全是剧情，没空低落了' },
+    { name:'《开端》', ep:'第10集', why:'一口气看完那种，紧张到忘掉所有不开心' },
+    { name:'《肥宝的搞笑日常》', ep:'第3集', why:'短片集，五分钟笑八次，低落直接散' },
+    { name:'《极限职业》', ep:'正片', why:'韩国动作喜剧，笑到肚子疼，低落全没了' },
+    { name:'《抓娃娃》', ep:'正片', why:'沈腾新片，笑中带泪，看完低落翻篇' },
+    { name:'《夏洛特烦恼》', ep:'正片', why:'开心麻花经典，笑着笑着就释怀了' },
+    { name:'《人在囧途》', ep:'正片', why:'公路喜剧，看完觉得再倒霉也没那么糟' },
+    { name:'《三傻大闹宝莱坞》', ep:'正片', why:'印度电影，笑着讲道理，低落时看特别提气' },
+    { name:'《摔跤吧！爸爸》', ep:'正片', why:'励志到爆，看完你会觉得自己也可以' },
+    { name:'《当幸福来敲门》', ep:'正片', why:'威尔·史密斯，看完会相信自己能熬过去' },
+    { name:'《触不可及》', ep:'正片', why:'法国喜剧，笑中带泪，低落时看最合适' },
+    { name:'《头脑特工队》', ep:'正片', why:'皮克斯动画，看完会理解自己的情绪' },
+    { name:'《疯狂动物城》', ep:'正片', why:'迪士尼动画，轻松搞笑又有力量' },
+    { name:'《大话西游之大圣娶亲》', ep:'正片', why:'周星驰无厘头，看完什么低落都散了' },
+    { name:'《九品芝麻官》', ep:'正片', why:'星爷早期喜剧，笑到停不下来' },
+    { name:'《东成西就》', ep:'正片', why:'港式闹剧，无厘头到极致，看完心情大好' }
+  ],
+  '平稳': [
+    { name:'《父母爱情》', ep:'随便从哪集开始', why:'今天状态好，适合补这种有余味的剧' },
+    { name:'《知否知否》', ep:'第36集', why:'很多人反复看的一集，值得慢慢品' },
+    { name:'《觉醒年代》', ep:'第12集', why:'适合在好状态里看，能品出更多细节' },
+    { name:'《大江大河》', ep:'第15集', why:'状态好的时候看这种剧，能看进去更多层次' },
+    { name:'《人世间》', ep:'第20集', why:'好日子里看苦难，会更珍惜当下的安稳' },
+    { name:'《庆余年》', ep:'第8集', why:'今天脑子够用，适合看范闲玩权谋' },
+    { name:'《潜伏》', ep:'第6集', why:'经典谍战，每次重看都能发现新细节' },
+    { name:'《走向共和》', ep:'第10集', why:'状态好的时候看历史剧，会看进去很多门道' },
+    { name:'《山海情》', ep:'第5集', why:'今天心情好，看看这片土地上发生过的事，会更感恩' },
+    { name:'《琅琊榜》', ep:'第14集', why:'梅长苏的每一步都是棋，适合好状态慢慢品' },
+    { name:'《漫长的季节》', ep:'第8集', why:'节奏好、演技好，好日子配好剧' }
+  ],
+  '亢奋': [
+    { name:'《武林外传》', ep:'第38集', why:'这集能帮你消耗多余的能量，看完会安静下来' },
+    { name:'《甄嬛传》', ep:'第67集', why:'全程高能，看完你的能量刚好用完，可以踏实休息了' },
+    { name:'《庆余年》', ep:'第46集', why:'高潮迭起，看完脑子里还在复盘剧情' },
+    { name:'《潜伏》', ep:'第20集', why:'节奏极快，紧张感拉满，多余的能量全被剧情吸走' },
+    { name:'《开端》', ep:'第15集', why:'烧脑又紧凑，看完亢奋感直接转化为满足感' },
+    { name:'《狂飙》', ep:'第26集', why:'高启强的反转看得人肾上腺素飙升，能量正好消耗掉' },
+    { name:'《琅琊榜》', ep:'第46集', why:'大结局前的高潮部分，看完会有一种被掏空的满足感' },
+    { name:'《长安十二时辰》', ep:'第12集', why:'节奏快到飞起，看完连多余的精力都没了' },
+    { name:'《沉默的真相》', ep:'第8集', why:'悬疑拉满，看完整个人安静下来，思考代替了亢奋' },
+    { name:'《唐朝诡事录》', ep:'第16集', why:'紧凑又上头，多余的能量全用在猜剧情上了' }
+  ]
+};
+
+// 治愈系音乐库（按五行，国内外混搭）
+const MUSIC_DB = {
+  '木': [
+    { name:'《慢慢喜欢你》', artist:'莫文蔚', mood:'闭上眼睛，想想你慢慢喜欢上一个人的那个下午。阳光、风、还有心跳加速的感觉。' },
+    { name:'《旅行的意义》', artist:'陈绮贞', mood:'听这首歌的时候，允许自己在脑海里走一段路。不需要真的出发，心的移动也算。' },
+    { name:'《春风十里》', artist:'鹿先森乐队', mood:'如果窗外有风，打开窗户听。如果没有，闭上眼睛自己造一阵。' },
+    { name:'《A Thousand Years》', artist:'Christina Perri', mood:'钢琴前奏响起来的时候，世界会安静几秒钟。就这几秒，够用了。' }
+  ],
+  '火': [
+    { name:'《盛夏》', artist:'好妹妹乐队', mood:'闭上眼睛回想一下那个夏天发生过的故事吧。不是每个夏天都值得记住，但总有一个是你心里永远不灭的晚霞。' },
+    { name:'《宁夏》', artist:'梁静茹', mood:'如果你今天很累，这首歌就是给你的一把小扇子。慢慢摇，慢慢凉下来。' },
+    { name:'《Sunny》', artist:'Bobby Hebb', mood:'1966年的歌，阳光到要溢出来。听完去做一件让你嘴角上扬的小事吧。' },
+    { name:'《Viva La Vida》', artist:'Coldplay', mood:'弦乐铺开的时候，你会觉得生活还是挺壮阔的。不管今天经历了什么。' }
+  ],
+  '土': [
+    { name:'《稻香》', artist:'周杰伦', mood:'小时候的快乐很简单，一颗糖、一阵风、一条田埂。这首歌带你回到那个下午。' },
+    { name:'《致姗姗来迟的你》', artist:'李健', mood:'适合在黄昏听。夕阳照在你身上的时候，一切都会好起来的。' },
+    { name:'《平凡之路》', artist:'朴树', mood:'朴树四十多岁时写的。有些路，走着走着就平坦了。' },
+    { name:'《Ho Hey》', artist:'The Lumineers', mood:'简单到只有鼓掌和拍手，但就是让人想跟着一起晃。适合一个人散步的时候听。' }
+  ],
+  '金': [
+    { name:'《遇见》', artist:'孙燕姿', mood:'干净的吉他，干净的声音。像冬天推开门迎面的第一口冷空气——冷，但让你清醒。' },
+    { name:'《秋酿》', artist:'房东的猫', mood:'秋天酿的酒，要等到冬天才能喝。有些事急不来，今天不急，这首歌也不急。' },
+    { name:'《微光》', artist:'曹方', mood:'听完想开窗。外面也许很冷，但你需要那一口空气。' },
+    { name:'《Skinny Love》', artist:'Bon Iver', mood:'声音像冬天早上哈出来的白气。听完之后，会觉得安静是一件好事。' }
+  ],
+  '水': [
+    { name:'《一直很安静》', artist:'阿桑', mood:'有些歌不是用来开心的，是用来释放的。听完允许自己安静一会儿。' },
+    { name:'《理想三旬》', artist:'陈鸿宇', mood:'不是让你伤心，是让你知道——三十岁也好，四十岁也好，有理想的人永远年轻。' },
+    { name:'《海》', artist:'脆莓', mood:'如果今天过得不太好，把疲惫扔进这片海里，然后转身离开。海会接住的。' },
+    { name:'《Путник (Traveler)》', artist:'Bi-2', mood:'俄罗斯乐队Bi-2的歌，你可能听不懂歌词，但旋律会让你想去一个很远的地方。' }
+  ]
+};
+
+// 断舍离（按忌神，简洁直白表述）
+const DONGSHELJ_DB = {
+  '火': [
+    '没有气的打火机',
+    '断了但还留着的那根充电线',
+    '很久没点燃过的蜡烛'
+  ],
+  '金': [
+    '不再戴的旧首饰',
+    '生锈的剪刀或指甲刀',
+    '钱包里过期的卡片'
+  ],
+  '木': [
+    '半死不活的绿植，留或弃，今天做个决定',
+    '已经落灰的干花',
+    '走路硌脚但没扔的旧鞋'
+  ],
+  '水': [
+    '浴室快用完的小样瓶',
+    '开了很久没用完的香水或精油',
+    '抽屉里没用过但舍不得扔的一次性洗漱用品'
+  ],
+  '土': [
+    '冰箱里的过期食品',
+    '攒着的空零食罐或外卖袋',
+    '手机通讯录里两年没联系的人'
+  ]
+};
+
+// 年龄共情文案（每天根据日期动态选取，不同生日的人同一天看到的也不同）
+const AGE_EMPATHY_TEMPLATES = {
+  female: {
+    '18-24': [
+      '你正处在<strong>探索期的尾声</strong>，那种"好像什么都想要，又好像什么都不确定"的感觉，是真实的。不是你迷茫，是世界本来就这么大。',
+      '二十出头的你，有的是试错的本钱。今天不需要想清楚一辈子的事，先想清楚今天晚上吃什么。',
+      '你现在感受到的"不确定"，其实是自由度最高的阶段。别急着给自己下定义。',
+      '这个年纪最大的奢侈品是：你的选择还没有变成沉没成本。想试什么，趁现在。',
+      '别人都说年轻好，但其实年轻的时候最不知道"好"在哪里。没关系，十年后回头看，你会懂的。',
+      '二十岁的焦虑大多是假的——你以为你在做选择，其实你只是在收集信息。多经历，别急着交卷。',
+      '你的青春不会因为"没想清楚"就浪费掉。有些答案，走着走着就出现了。',
+      '这个阶段适合犯一些漂亮的错。不是所有的弯路都是弯路，有些弯路是你最好的风景。'
+    ],
+    '25-35': [
+      '你是一个正处在<strong>奥德赛时期</strong>的中女——在"应该稳定了"和"但我还没找到"之间来回横跳。这很正常，这个阶段就是拿来探索的，不是拿来焦虑的。',
+      '这一阶段的你，比二十岁时更知道自己不要什么了。这本身就是一种 clarity，别小看它。',
+      '外界的声音希望你"定下来"，但你内心清楚有些事还没到位。没关系，今天的你不需要给任何人一个交代。',
+      '你现在最大的困境不是"找不到方向"，而是"明明找到了，却不敢去"。今天可以试着迈一小步。',
+      '二十五到三十五岁是人生最长的一个坎。不是说你必须跨过去，而是你需要接受——有些事急不来。',
+      '你有没有发现，你已经不像二十岁那样什么都想往朋友圈发了？这不是变无聊了，这是你开始拥有自己的世界。',
+      '这个阶段的你，一边熬夜一边想养生。一边花钱一边想省钱。这不是矛盾，这叫活着。',
+      '你不需要在三十岁前把人生想明白。很多四十岁的人也没想明白，但他们活得很开心。你也可以。'
+    ],
+    '36-45': [
+      '你已经把很多事看得<strong>比以前透</strong>了，但偶尔也会有那种"我是不是错过了什么"的念头。没有，你什么都没错过，只是还没轮到。',
+      '这个年纪的你，有一种年轻人没有的笃定——哪怕你嘴上不承认。今天的建议：对自己好一点，不是奖励，是应该。',
+      '三十而立之后，你学会了说不。这才是真正有力量的开始。',
+      '你现在最应该做的，是停止和自己比较。今天的你，比昨天的你已经好了那么一点点。',
+      '四十岁不是变老了，是终于可以按自己的节奏走了。别人开两倍速的播放器，你开0.75，没关系。',
+      '你知道什么叫"累但踏实"吗？就是这种感觉。你已经过了需要证明自己的阶段了。',
+      '别人问你"怎么还不结婚/怎么还不生/怎么还在做这个"，你可以不回答。你的人生不需要解释。',
+      '这个年纪最好的投资不是理财，是睡眠。今晚试着11点之前放下手机。'
+    ],
+    '46-55': [
+      '你这个年纪的<strong>智识和阅历</strong>，是任何算法都算不出来的。今天的建议，不是让你前进，而是让你停下来享受一下自己已经积累的那些。',
+      '这个阶段的你，终于可以不在乎很多事了。这种自由，是年轻时花多少钱都买不到的。',
+      '你活到现在，已经证明了你的韧性。今天不需要再证明什么了，今天只需要让自己舒服一点。',
+      '人到中年最大的浪漫，是还能被一首歌、一阵风、一碗汤打动。如果你还有这种能力，恭喜你，你还没被生活磨平。',
+      '你照顾了很多人，今天该轮到你照顾自己了。不是自私，是公平。',
+      '年轻时你怕错过机会，现在你更怕错过休息。听你的身体，它比你的大脑诚实。'
+    ],
+    '55+': [
+      '你有一种<strong>沉淀下来的从容</strong>，那是时间给的。今天无论结果如何，你都比自己以为的更能承接。',
+      '到了这个年纪，你已经是很多人可以依靠的人了。但今天，先照顾好自己。',
+      '人生下半场的快乐很简单：身体不疼、天气好、有人等你吃饭。如果你今天三样都齐了，那你比大多数人幸运。',
+      '你活过的每一天都是资历。今天的你不需要向谁学习，你本身就是一个答案。'
+    ]
+  },
+  male: {
+    '18-24': [
+      '你正在那个<strong>什么都想冲一冲</strong>的年纪，能量很旺，但方向感还在形成中。今天的建议：先做一件，做完再说。',
+      '二十多岁的你，犯错成本很低。今天大胆试一件事，十年后你会感谢今天的自己。',
+      '你现在最大的敌人不是别人，是"再想想"。有些事不需要想太久，做了才知道。',
+      '年轻的好处是：你的时间不值钱，但你的可能性很值钱。多试。',
+      '别急着成为谁。你现在正在成为的那个人，比你以为的要好得多。'
+    ],
+    '25-35': [
+      '你在<strong>奥德赛时期</strong>，外界说该定了，但你心里清楚有些事还没到位。今天别想太远，就今天。',
+      '这个阶段的男性，往往被期待"扛事"。但今天，允许自己先照顾好自己的感受。',
+      '你不是不够努力，是这个世界给的选择太多了。选一个，然后不要再回头。',
+      '你已经不是那个可以通宵打游戏第二天照常上班的年纪了。今天早点睡，比任何自律都重要。',
+      '别人都在秀结果，只有你在过程里。但过程才是真正的战场，你已经在打了。'
+    ],
+    '36-45': [
+      '这个阶段的你，<strong>抗压力比二十岁时强多了</strong>，但疲惫感也更真实。今天给自己多留一点喘息。',
+      '你现在已经能搞定很多事了。今天换一个角度：不解决问题，而是享受当下。',
+      '你不是变懒了，你只是学会了分辨哪些事值得拼命。这就是成熟。',
+      '中年男人的快乐很简单：独处半小时、一顿好吃的、没人找你开会。今天可以给自己安排一次。',
+      '你扛了很多东西，但没人要求你扛所有东西。今天放下一件，不会塌的。'
+    ],
+    '46+': [
+      '你已经过了需要向任何人证明自己的年纪，<strong>今天就做自己喜欢的</strong>就对了。',
+      '这个年纪的你，终于可以把"别人怎么看"这件事，从优先级里删掉了。这是真正的自由。',
+      '你现在最珍贵的东西不是经验，是心态。保持好奇心的人永远不会老。',
+      '今天最重要的任务：让自己开心。不是没追求，是活得通透了。'
+    ]
+  }
+};
+
+// 治愈事件（按喜用五行，内容更多元：含运动、泡澡、散步、社交等）
+const ENERGY_EVENTS = {
+  '木': [
+    '路过一棵好看的树，停下来拍一张照吧',
+    '给自己买一小束花放在桌上',
+    '泡一杯绿茶，看茶叶慢慢舒展开',
+    '出门走走，不用目的地，走二十分钟就回',
+    '给很久没联系的朋友发一条"最近好吗"',
+    '打开窗户，让风进来，站一会儿',
+    '找一个绿色调的东西多看几眼',
+    '整理一下桌面，杂物归位就好',
+    '去公园慢跑或快走二十分钟',
+    '做一组拉伸或瑜伽，感受身体的舒展',
+    '在窗台养一盆绿植，每天浇点水'
+  ],
+  '火': [
+    '给自己倒一杯温水或红茶慢慢喝',
+    '点一支喜欢的香薰蜡烛',
+    '看一段夕阳的照片或视频',
+    '穿一件红色或暖色的衣服出门',
+    '给在乎的人发一个表情包就好',
+    '晒十分钟太阳，不用太久',
+    '做一顿热乎乎的饭给自己吃',
+    '翻出一张让你笑出来的照片',
+    '去户外快走或慢跑，让身体暖起来',
+    '做一组开合跳或深蹲，让血液流动起来',
+    '约朋友出去吃顿热乎的火锅或烧烤'
+  ],
+  '土': [
+    '泡一杯普洱或奶茶慢慢喝',
+    '给自己煮一碗粥或热汤',
+    '整理一个抽屉或一个角落就好',
+    '摸摸家里毛茸茸的东西',
+    '走一段没有手机的路',
+    '泡个热水脚再睡觉',
+    '把床铺整理得整整齐齐',
+    '翻翻旧相册看几分钟',
+    '做一组平板支撑或卷腹，感受核心的力量',
+    '去户外散步，感受脚踩在大地上的感觉',
+    '给自己烤一份红薯或煮一锅热汤'
+  ],
+  '金': [
+    '泡一杯白茶慢慢喝',
+    '整理一下衣柜里挂着的衣服',
+    '听一首安静的纯音乐',
+    '把今天要做的事列个清单',
+    '给自己买一束白色或浅色的花',
+    '擦一擦经常用的东西，比如眼镜或手机屏幕',
+    '早点准备明天的衣服',
+    '写三件今天做得不错的小事',
+    '去游泳或泡一个热水澡，感受水的包裹',
+    '做一组力量训练，感受肌肉的收紧',
+    '整理一下手机相册，删掉不需要的照片'
+  ],
+  '水': [
+    '喝一大杯温水',
+    '听一首安静的歌，什么都不用做',
+    '看看窗外发五分钟呆',
+    '给自己煮一杯黑咖啡或豆浆',
+    '洗一个热水澡放松一下',
+    '翻几页一直没看完的书',
+    '涂个护手霜之类的，照顾自己一下',
+    '关掉手机屏幕，安静坐三分钟',
+    '去游泳或泡一个热水澡，让身体完全放松',
+    '做一组拉伸或冥想，感受呼吸的节奏',
+    '给自己煮一碗热汤面或一杯热牛奶'
+  ]
+};
+
+// 小图标池，用于治愈事件
+const ENERGY_ICONS = ['icon-leaf','icon-cup','icon-mail','icon-window','icon-music'];
+
+// 确保每天和每个不同生日的人看到的文案都不同
+function getAgeEmpathy(year, month, day, gender) {
+  const age = new Date().getFullYear() - year;
+  const isFemale = gender === 'female';
+  const today = new Date();
+  // 种子 = 用户出生月*100 + 用户出生日 + 今日日期（1-31）
+  const seed = month * 100 + day + today.getDate() + today.getMonth();
+
+  let key = '25-35';
+  if (age >= 18 && age <= 24) key = '18-24';
+  else if (age >= 25 && age <= 35) key = '25-35';
+  else if (age >= 36 && age <= 45) key = '36-45';
+  else if (age >= 46 && age <= 55) key = '46-55';
+  else if (age > 55) key = '55+';
+
+  const templates = AGE_EMPATHY_TEMPLATES[isFemale ? 'female' : 'male'][key];
+  if (!templates || templates.length === 0) return '今天的建议：对自己好一点。';
+  const idx = Math.abs(seed) % templates.length;
+  return templates[idx];
+}
+
+// 今日运势文案（结合喜用五行+能量状态）
+const VIBE_TEXT = {
+  '旺': [
+    '今天你是全场最在状态的那个。能量在线，行动力拉满。不过正因为能量过旺，容易一鼓作气把三天的事全做了——适当留一点，明天的你会感谢今天的你。',
+    '今天的你自带气场BGM。这种状态适合推进重要事务，但注意别说话太快，给别人留反应时间。',
+    '今天五行全开，做什么都有加成。建议趁这股劲把拖了很久的事解决掉，但别同时开三个新项目——贪多是今天唯一的坑。',
+    '流日和你的喜用神完美共振，今天是近期运气最好的一天之一。大胆一点，平时不敢说的话今天可以说，平时犹豫的事今天可以做。',
+    '今天你的决策力特别强，直觉也准。如果有什么需要拍板的事，现在就是最好的时机。但记得——决定完就执行，别反复纠结。',
+    '能量爆表的一天。适合社交、谈判、面试、汇报，所有需要"气场"的场景今天都占优。晚上记得犒劳自己，别让这股好能量白白消耗。',
+    '今天做什么都顺利得有点不真实，享受就好。但也别飘，脚踏实地把该做的做完，这份好运才会延续下去。'
+  ],
+  '顺': [
+    '今天流日五行和你搭得挺顺，那种"事情没遇到大阻力"的顺滑感。适合推进卡了很久的事，或者跟重要的人约一顿饭。',
+    '今天整体能量稳中有升，像手机充到了80%。适合做一件拖延已久的小事——完成它会给你带来今天最踏实的满足感。',
+    '今天有一种"刚刚好"的感觉——不特别旺也不特别弱，就是刚刚好。适合处理日常事务，效率会比你预期的高。',
+    '今天的小事会格外顺利，比如出门正好赶上公交、跟人沟通一次就到位。这种顺滑感不要浪费，适合处理需要沟通协调的事。',
+    '今天你说话别人更愿意听，做事更容易得到支持。如果有什么需要说服别人的事，今天开口效果最好。',
+    '流日给你加了一层"润滑剂"，今天推进事情阻力比平时小。别浪费这个窗口，把最近积压的待办往前推一推。',
+    '今天的你特别适合做长期规划。不是马上要行动的那种，而是静下心来想清楚下一步该怎么走。今天想的方向大概率是对的。'
+  ],
+  '平': [
+    '今天能量处于平衡状态，没什么大起伏，也没什么阻力。这种不好也不坏的天，其实最适合做需要耐心的小事：整理文件、回个一直拖着的消息、或者好好吃一顿饭。',
+    '普普通通的今天，和你一样稳。大多数好事都发生在"普通的某一天"。今天好好生活，已经赢了。',
+    '今天是"低风险运行"模式。不适合做重大决定，但特别适合处理日常——你会发现平时觉得烦的小事今天做起来没那么难受。',
+    '今天没什么特别的，但这本身就是好消息——没有起伏意味着没有意外。踏踏实实过完这一天，就是今天的胜利。',
+    '平平淡淡的一天，适合给自己充电。不用做什么大事，泡杯茶、发发呆、走走路，这些"无用的好事"今天做了最有用。',
+    '今天的能量在"待机"状态，不建议主动出击，但适合复盘和整理。回顾一下最近做了什么、接下来要做什么，比瞎忙活强一百倍。',
+    '今天是用来"打底"的——你可能不会觉得特别开心，但也不会遇到什么糟心事。该吃吃该睡睡，保持节奏就是最好的策略。'
+  ],
+  '弱': [
+    '今天能量略偏低，就像手机电量20%——还够用，但要省着花。不适合硬刚重要决策，适合做点轻松的事给自己充个电。推荐今晚早点睡。',
+    '今天你的能量在"我需要被照顾"模式。那就照顾自己一下——一杯好喝的，一首喜欢的歌，一集看了很多遍还会笑的剧。',
+    '今天的你可能有点提不起劲，这不代表你不行，只是今天不适合跟自己较劲。允许自己慢一点，低电量的时候强行运转只会更耗电。',
+    '今天适合做"减法"——取消不必要的社交，推掉不急的会议，少做几个决定。把精力留给真正重要的事，或者留给床。',
+    '能量不足的日子也有好处——你会比平时更清醒地看到自己真正需要什么。今天适合反思，不适合行动。',
+    '今天的你像是被调低了音量，世界还是那个世界，只是你今天不想那么大声。没关系，安静的时候反而能听到更多。',
+    '低能量日不代表坏日子。今天你的感受力比平时强，适合看一部好电影、读几页书、或者听一首很久没听的歌。'
+  ],
+  '冲': [
+    '今天能量容易起伏，不是坏事，就是今天的你比平时更敏感一点，更容易被小事触动。这时候推荐少刷社交媒体，多喝水，多走走路。',
+    '今天有点像老天给你安排了道小题。能量不差，但容易分散。今天做事专注一件，比同时打开十个应用效率高得多。',
+    '今天的你情绪开关有点灵敏，别人一句话你可能想半天。这不是缺点，但今天需要刻意给自己"设限"——别在深夜做大决定。',
+    '冲煞日不代表倒霉，只是你的能量和外界在磨合。建议今天多做"确定性强"的事，少做"结果不可控"的事，你会舒服很多。',
+    '今天容易急躁或者焦虑，但你知道这只是流日的影响，不是你的真实状态。深呼吸，慢慢来，急的事等一小时再说。',
+    '冲的能量是一把双刃剑——用好了爆发力极强，用不好就是一顿乱撞。今天做事之前默数三秒，你会发现选择完全不同。',
+    '今天可能有点"不对劲"但又说不出来哪里不对。别纠结了，该干嘛干嘛，过去之后回头看其实也没什么。'
+  ]
+};
+
+// 五行相生克
+function wxSheng(wx) { return {'木':'火','火':'土','土':'金','金':'水','水':'木'}[wx]; }
+function wxKe(wx) { return {'木':'土','火':'金','土':'水','金':'木','水':'火'}[wx]; }
+// 找到"生"某个五行的五行（即母）
+function wxShengBy(child) {
+  return Object.entries({'木':'水','火':'木','土':'火','金':'土','水':'金'}).find(([k,v]) => k === child)?.[1] || null;
+}
+
+// ============================================================
+// 八字排盘
+// ============================================================
+function getYearGanZhi(year) {
+  const ganIdx = (year - 4 + 1200) % 10;
+  const zhiIdx = (year - 4 + 1200) % 12;
+  return { gan: GAN[ganIdx], zhi: ZHI[zhiIdx] };
+}
+const YEAR_TO_MONTH_GAN_OFFSET = {'甲':2,'己':2,'乙':4,'庚':4,'丙':6,'辛':6,'丁':8,'壬':8,'戊':0,'癸':0};
+const MONTH_ZHI = ['寅','卯','辰','巳','午','未','申','酉','戌','亥','子','丑'];
+function getMonthGanZhi(yearGan, month) {
+  const mzhi = MONTH_ZHI[(month - 1) % 12];
+  const startOffset = YEAR_TO_MONTH_GAN_OFFSET[yearGan] !== undefined ? YEAR_TO_MONTH_GAN_OFFSET[yearGan] : 0;
+  const mganIdx = (startOffset + (month - 1)) % 10;
+  return { gan: GAN[mganIdx], zhi: mzhi };
+}
+function getDayGanZhi(year, month, day) {
+  const base = new Date(1900, 0, 1);
+  const target = new Date(year, month - 1, day);
+  const diff = Math.floor((target - base) / 86400000);
+  const ganIdx = (diff + 10 + 6000) % 10;
+  const zhiIdx = (diff + 10 + 6000) % 12;
+  return { gan: GAN[ganIdx], zhi: ZHI[zhiIdx] };
+}
+function getHourGanZhi(dayGan, hour) {
+  const zhiIdx = Math.floor(((hour + 1) % 24) / 2);
+  const dayGanIdx = GAN.indexOf(dayGan);
+  const hourGanStart = [0, 2, 4, 6, 8][dayGanIdx % 5];
+  const ganIdx = (hourGanStart + zhiIdx) % 10;
+  return { gan: GAN[ganIdx], zhi: ZHI[zhiIdx] };
+}
+function calcBazi(year, month, day, hour) {
+  const y = getYearGanZhi(year);
+  const m = getMonthGanZhi(y.gan, month);
+  const d = getDayGanZhi(year, month, day);
+  const h = getHourGanZhi(d.gan, hour);
+  return [
+    { label:'年柱', gan: y.gan, zhi: y.zhi },
+    { label:'月柱', gan: m.gan, zhi: m.zhi },
+    { label:'日柱', gan: d.gan, zhi: d.zhi },
+    { label:'时柱', gan: h.gan, zhi: h.zhi }
+  ];
+}
+function countWx(bazi) {
+  const wxCount = {'木':0,'火':0,'土':0,'金':0,'水':0};
+  for (const col of bazi) {
+    const gw = GAN_WX[GAN.indexOf(col.gan)];
+    const zw = ZHI_WX[ZHI.indexOf(col.zhi)];
+    if (gw) wxCount[gw]++;
+    if (zw) wxCount[zw]++;
+    for (const hg of (ZHI_HIDDEN[col.zhi] || [])) {
+      const hw = GAN_WX[GAN.indexOf(hg)];
+      if (hw) wxCount[hw] += 0.5;
+    }
+  }
+  return wxCount;
+}
+
+// ============================================================
+// 命格判断：专旺格、从格、普通格
+// ============================================================
+
+/**
+ * 判断专旺格（重写：用排序+占比，更健壮）
+ * 专旺格核心：日主是最强五行之一，且日主+生我/我生合计占主导，克日主Weak
+ * 返回：{ isZhuanWang, zwType:'shengwo'|'wosheng', partnerWx }
+ */
+function checkZhuanWang(riWx, wxCount) {
+  const total = Object.values(wxCount).reduce((a,b) => a+b, 0);
+  const riScore = wxCount[riWx] || 0;
+
+  // 将五行按分数排序
+  const sorted = Object.entries(wxCount).sort((a,b) => b[1] - a[1]);
+  const top1 = sorted[0], top2 = sorted[1];
+
+  // 日主不在前2强 → 不是专旺
+  if (top1[0] !== riWx && top2[0] !== riWx) {
+    console.log('[专旺格判断-未触发]', { 原因: '日主不在前2强', 日主: riWx, sorted });
+    return { isZhuanWang: false };
+  }
+
+  // 找出与日主搭配的五行（另一强五行）
+  const partnerWx = top1[0] === riWx ? top2[0] : top1[0];
+
+  // 判断是"生我"型还是"我生"型
+  const isShengWo = (wxShengBy(riWx) === partnerWx); // 生我（如金生水）
+  const isWoSheng = (wxSheng(riWx) === partnerWx);   // 我生（如水生木）
+
+  if (!isShengWo && !isWoSheng) {
+    console.log('[专旺格判断-未触发]', { 原因: 'partnerWx既不是生我也不是我生', 日主: riWx, partnerWx, 生我: wxShengBy(riWx), 我生: wxSheng(riWx) });
+    return { isZhuanWang: false };
+  }
+
+  // 日主+搭配五行合计占比（专旺格阈值放宽至45%）
+  const combined = riScore + (wxCount[partnerWx] || 0);
+  const combinedRatio = combined / total;
+  if (combinedRatio < 0.45) {
+    console.log('[专旺格判断-未触发]', { 原因: '合计占比不足45%', 日主: riWx, partnerWx, combinedRatio: (combinedRatio*100).toFixed(1)+'%' });
+    return { isZhuanWang: false };
+  }
+
+  // 克日主的五行占比不能太高（放宽至20%）
+  const keRiWx = wxKe(riWx);
+  const keRiScore = wxCount[keRiWx] || 0;
+  const keRiRatio = keRiScore / total;
+  if (keRiRatio >= 0.20) {
+    console.log('[专旺格判断-未触发]', { 原因: '克日主占比>=20%', 日主: riWx, 克日主: keRiWx, keRiRatio: (keRiRatio*100).toFixed(1)+'%' });
+    return { isZhuanWang: false };
+  }
+
+  // 调试输出（打开浏览器控制台 F12 查看）
+  console.log('[专旺格判断-触发]', {
+    日主: riWx, 日主分数: riScore, 搭配五行: partnerWx, 搭配分数: wxCount[partnerWx],
+    合计占比: (combinedRatio*100).toFixed(1)+'%', 克日主: keRiWx, 克日主占比: (keRiRatio*100).toFixed(1)+'%',
+    专旺类型: isShengWo ? '生我型（如金水专旺）' : '我生型（如木火专旺）'
+  });
+
+  return {
+    isZhuanWang: true,
+    zwType: isShengWo ? 'shengwo' : 'wosheng',
+    partnerWx,
+    combinedRatio,
+    keRiWx,
+    keRiScore
+  };
+}
+
+/**
+ * 判断从格
+ * 条件：日主极弱（占比 <= 8%）且整个八字被某一两种五行主导
+ * 从格需要"顺势"，喜用神与主导五行相同
+ */
+function checkCongGe(riWx, wxCount) {
+  const total = Object.values(wxCount).reduce((a,b) => a+b, 0);
+  const riScore = wxCount[riWx] || 0;
+  const riRatio = riScore / total;
+
+  if (riRatio > 0.10) return { isCongGe: false };
+
+  // 找出八字中最强的五行（排除日主本身）
+  let maxWx = null, maxScore = 0;
+  let secondWx = null, secondScore = 0;
+  for (const [wx, score] of Object.entries(wxCount)) {
+    if (wx === riWx) continue;
+    if (score > maxScore) {
+      secondWx = maxWx; secondScore = maxScore;
+      maxWx = wx; maxScore = score;
+    } else if (score > secondScore) {
+      secondWx = wx; secondScore = score;
+    }
+  }
+
+  // 最强五行必须占比 >= 40% 才算从格
+  const maxRatio = maxScore / total;
+  if (maxRatio < 0.40) return { isCongGe: false };
+
+  return {
+    isCongGe: true,
+    congType: maxWx,  // 从什么格（从木、从火等）
+    maxWx, maxScore, secondWx
+  };
+}
+
+/**
+ * 计算喜用神（整合专旺格、从格、普通格）
+ * 返回：{ xi: [], ji: [], riWx, riRatio, geType, geLabel, riGan }
+ */
+function calcXiyong(bazi, wxCount) {
+  const riGan = bazi[2].gan;
+  const riWx = GAN_WX[GAN.indexOf(riGan)];
+  const total = Object.values(wxCount).reduce((a,b) => a+b, 0);
+  const riScore = wxCount[riWx] || 0;
+  const riRatio = riScore / total;
+
+  // 1. 先判断专旺格
+  const zw = checkZhuanWang(riWx, wxCount);
+  if (zw.isZhuanWang) {
+    // 喜用：日主 + 搭配五行（生我 或 我生，取决于专旺类型）
+    const xiSet = new Set([riWx]);
+    if (zw.partnerWx) xiSet.add(zw.partnerWx);
+
+    const xi = [...xiSet];
+    const keRi = zw.keRiWx;
+    // 忌神：克日主，以及（若不在喜用中）印枭
+    const yinWx = wxShengBy(riWx);
+    const jiList = [keRi];
+    if (yinWx && !xi.includes(yinWx)) jiList.push(yinWx);
+
+    return {
+      xi,
+      ji: [...new Set(jiList)].filter(w => !xi.includes(w)),
+      riWx, riRatio,
+      geType: 'zhuanwang',
+      geLabel: '专旺格（' + (zw.zwType === 'shengwo' ? '生我型' : '我生型') + '）',
+      riGan
+    };
+  }
+
+  // 2. 再判断从格
+  const cg = checkCongGe(riWx, wxCount);
+  if (cg.isCongGe) {
+    const xi = [cg.maxWx];
+    // 次强五行如果是生助主五行的，也算喜
+    if (cg.secondWx && (wxShengBy(cg.maxWx) === cg.secondWx || wxSheng(cg.secondWx) === cg.maxWx)) {
+      xi.push(cg.secondWx);
+    }
+    // 忌：日主本身（太弱帮不了忙）和克主导五行的
+    const ji = [riWx, wxKe(cg.maxWx)];
+    return {
+      xi: [...new Set(xi)],
+      ji: [...new Set(ji)].filter(w => !xi.includes(w)),
+      riWx, riRatio, geType: 'congge', geLabel: `从${cg.congType}格`, riGan
+    };
+  }
+
+  // 3. 普通格局
+  let xi = [], ji = [];
+  if (riRatio > 0.28) {
+    // 身强：喜克（官杀）、喜泄（食伤）；忌比劫、忌印生
+    xi = [wxKe(riWx), wxSheng(riWx)];
+    ji = [riWx];
+  } else {
+    // 身弱：喜生（印枭）、喜比助（比劫）；忌克（官杀）
+    xi = [wxShengBy(riWx), riWx];
+    ji = [wxKe(riWx)];
+  }
+  xi = [...new Set(xi)].filter(Boolean);
+  ji = [...new Set(ji)].filter(Boolean).filter(w => !xi.includes(w));
+
+  return {
+    xi, ji, riWx, riRatio,
+    geType: riRatio > 0.28 ? 'shenqiang' : 'shenruo',
+    geLabel: riRatio > 0.28 ? '身强' : '身弱',
+    riGan
+  };
+}
+
+function getTodayVibeKey(xi, todayGanZhi) {
+  const tzw = ZHI_WX[ZHI.indexOf(todayGanZhi.zhi)];
+  const tgw = GAN_WX[GAN.indexOf(todayGanZhi.gan)];
+  let score = 0;
+  if (xi.includes(tzw)) score += 2;
+  if (xi.includes(tgw)) score += 1;
+  if (score >= 3) return '旺';
+  if (score >= 1) return '顺';
+  return '平';
+}
+function getEmotionState(todayGanZhi, xiyong) {
+  const tzw = ZHI_WX[ZHI.indexOf(todayGanZhi.zhi)];
+  if (xiyong.ji.includes(tzw)) return '情绪化';
+  if (xiyong.xi.includes(tzw)) return '亢奋';
+  return '平稳';
+}
+function getJinjiWx(ji, todayGanZhi) {
+  const tzw = ZHI_WX[ZHI.indexOf(todayGanZhi.zhi)];
+  if (ji.includes(tzw)) return tzw;
+  return ji[0] || '火';
+}
+
+// ============================================================
+// 天气获取（Open-Meteo + 地理编码）
+// ============================================================
+let weatherData = null;
+
+async function fetchWeather(cityName) {
+  if (!cityName || cityName.length < 2) return null;
+  try {
+    document.getElementById('weather-status').textContent = '🔍 正在获取天气…';
+    const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1&language=zh&format=json`;
+    const geoRes = await fetch(geoUrl, { signal: AbortSignal.timeout(5000) });
+    const geoData = await geoRes.json();
+    if (!geoData.results || geoData.results.length === 0) {
+      document.getElementById('weather-status').textContent = '⚠ 未找到城市天气，穿衣建议将使用通用版';
+      return null;
+    }
+    const { latitude, longitude, name } = geoData.results[0];
+    // 获取今天+明天的天气（forecast_days=2）
+    const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,weather_code&hourly=temperature_2m&current=temperature_2m,weather_code&timezone=auto&forecast_days=2`;
+    const wRes = await fetch(weatherUrl, { signal: AbortSignal.timeout(5000) });
+    const wData = await wRes.json();
+
+    const result = {
+      maxTemp: Math.round(wData.daily.temperature_2m_max[0]),
+      minTemp: Math.round(wData.daily.temperature_2m_min[0]),
+      currentTemp: Math.round(wData.current.temperature_2m),
+      weatherCode: wData.current.weather_code,
+      cityDisplay: name,
+      tomorrowMax: Math.round(wData.daily.temperature_2m_max[1]),
+      tomorrowMin: Math.round(wData.daily.temperature_2m_min[1]),
+      tomorrowCode: wData.daily.weather_code[1]
+    };
+
+    document.getElementById('weather-status').textContent = `✓ ${name} · 今日 ${result.minTemp}～${result.maxTemp}℃`;
+    return result;
+  } catch (e) {
+    document.getElementById('weather-status').textContent = '⚠ 天气获取失败，穿衣建议将使用通用版';
+    return null;
+  }
+}
+
+function weatherCodeToText(code) {
+  if (code === 0) return '晴天';
+  if (code <= 3) return '多云';
+  if (code <= 9) return '雾';
+  if (code <= 19) return '毛毛雨';
+  if (code <= 29) return '小雨';
+  if (code <= 39) return '雪';
+  if (code <= 49) return '雾';
+  if (code <= 59) return '毛毛雨';
+  if (code <= 69) return '雨';
+  if (code <= 79) return '雪';
+  if (code <= 84) return '阵雨';
+  if (code <= 94) return '雷阵雨';
+  return '强雷暴';
+}
+
+// 穿衣建议（基于温度区间，简洁合理）
+// 五行对应颜色描述 + 英文键名
+const WX_COLOR_INFO = {
+  '木': { label:'木色', colors:'绿色、青色、橄榄绿', main:'绿色系', hex:['#2d6a4f','#40916c','#52b788'] },
+  '火': { label:'火色', colors:'红色、橙色、粉红色、紫色', main:'红色/暖橙色系', hex:['#d62828','#f77f00','#fcbf49'] },
+  '土': { label:'土色', colors:'黄色、棕色、卡其、驼色、奶茶色', main:'驼色/奶茶色系', hex:['#cb997e','#ddb892','#e6ccb2'] },
+  '金': { label:'金色', colors:'白色、银色、灰色、金属色', main:'白色/银灰色系', hex:['#ffffff','#d6d3d1','#a8dadc'] },
+  '水': { label:'水色', colors:'黑色、深蓝、深灰', main:'黑色/深蓝色系', hex:['#000000','#1d3557','#457b9d'] }
+};
+
+// 配饰推荐（按五行，多样化：手链、项链、耳饰、戒指、手表、包、帽、围巾等）
+const ACCESSORIES = {
+  '木': [
+    '绿幽灵/绿发晶手链','橄榄石/沙弗莱石项链','木质/绿檀耳饰','孔雀石戒指',
+    '军绿色棒球帽','橄榄绿棉质围巾','绿色系帆布托特包','竹节纹银手镯'
+  ],
+  '火': [
+    '冰粉晶/石榴石手链','玫瑰金/红纹石项链','朱砂/红兔毛耳钉','珊瑚/红纹石戒指',
+    '温暖橘色针织围巾','砖红色皮带','玫瑰金手表','暖色系斜挎包'
+  ],
+  '土': [
+    '琥珀/蜜蜡/黄水晶手链','驼色/金发晶项链','黄水晶/蜜蜡耳饰','琥珀/黄水晶戒指',
+    '驼色/奶茶色编织围巾','卡其色棒球帽','棕色皮带','陶土色/驼色托特包'
+  ],
+  '金': [
+    '白水晶/透石膏手链','珍珠/白玛瑙项链','银色/白K金耳线','珍珠/白玉戒指',
+    '银色手表/白金手表','米白色羊绒围巾','白色/银灰色棒球帽','铂金/银饰系手镯'
+  ],
+  '水': [
+    '黑曜石/黑碧玺手链','海蓝宝/蓝晶石项链','蓝宝石/黑曜石耳饰','海蓝宝/蓝宝石戒指',
+    '深蓝色针织围巾','黑色/深蓝棒球帽','黑色/深蓝皮带','黑色/深蓝双肩包'
+  ]
+};
+
+function getClothingAdvice(xiList, weather, noCity, gender) {
+  const isMale = gender === 'male';
+
+  // 颜色描述
+  const colorDesc = xiList.map(w => WX_COLOR_INFO[w].main).join('和');
+
+  // 上装选项（含中性/运动/休闲风格，不重复）
+  const topOptions = {
+    '木': ['橄榄绿工装外套','青色牛仔夹克','深绿针织开衫','苔藓绿棒球服','牛油果绿卫衣','军绿冲锋衣'],
+    '火': ['橘色针织衫','暖橘色连帽卫衣','朱砂红棒球服','酒红毛衣','砖红工装外套','暖色系运动外套'],
+    '土': ['驼色风衣','奶茶色西装外套','卡其色工装外套','棕色皮衣','米色羊绒衫','大地色系运动外套'],
+    '金': ['白色衬衫','银灰色西装外套','米白色针织衫','浅灰连帽卫衣','珍珠白棒球服','银灰运动外套'],
+    '水': ['黑色西装外套','深蓝色牛仔夹克','藏青色毛呢大衣','深灰连帽卫衣','炭灰棒球服','黑色冲锋衣']
+  };
+  // 从每个喜用五行中随机选1个上装
+  const topRecs = xiList.map(w => {
+    const opts = topOptions[w] || topOptions['木'];
+    return opts[Math.floor(Math.random() * opts.length)];
+  });
+
+  // 下装选项（使用专业词汇，含中性/运动/工装风格）
+  const bottomOptions = {
+    '木': ['深绿阔腿裤','牛仔蓝弯刀裤','橄榄绿工装裤/束脚裤','苔藓绿运动裤/慢跑裤'],
+    '火': ['深蓝吸烟裤','黑色西裤','深棕灯芯绒裤','酒红百褶裙/运动短裙'],
+    '土': ['卡其色阔腿裤','棕色西裤','奶茶色休闲裤/工装短裤','驼色直筒裤'],
+    '金': ['米白色直筒裤','浅灰运动裤/慢跑裤','白色牛仔裤','珍珠白休闲裤'],
+    '水': ['黑色西裤/运动裤','深蓝直筒裤/运动短裤','深灰毛呢裙','炭灰工装裤']
+  };
+  // 从每个喜用五行中随机选1个下装
+  const bottomRecs = xiList.map(w => {
+    const opts = bottomOptions[w] || bottomOptions['木'];
+    return opts[Math.floor(Math.random() * opts.length)];
+  });
+  if (!isMale) {
+    const skirtOptions = ['深蓝百褶裙','黑色A字裙','深灰直筒裙','奶茶色针织裙'];
+    bottomRecs.push(skirtOptions[Math.floor(Math.random() * skirtOptions.length)]);
+  }
+
+  // 连衣裙（仅女性，含多种风格）
+  const onePieceOptions = {
+    '木': ['橄榄绿/青色系连衣裙','牛油果绿碎花裙','深绿工装风连衣裙'],
+    '火': ['橘色/玫粉系连衣裙','酒红法式茶歇裙','暖橘色运动连衣裙'],
+    '土': ['驼色/奶茶色系连衣裙','卡其色工装风连衣裙','棕色针织连衣裙'],
+    '金': ['白色/银灰色系连衣裙','米白色运动连衣裙','珍珠白法式连衣裙'],
+    '水': ['黑色/深蓝色系连衣裙','深蓝碎花连衣裙','炭灰运动连衣裙']
+  };
+  const onePieceList = xiList.map(w => {
+    const opts = onePieceOptions[w] || onePieceOptions['木'];
+    return opts[Math.floor(Math.random() * opts.length)];
+  });
+  const onePiece = onePieceList.join('，或');
+
+  // 鞋子选项（现实常见款式，含中性/运动风格）
+  const shoeOptions = {
+    '木': ['棕色乐福鞋','绿色帆布鞋/板鞋','橄榄绿运动鞋/慢跑鞋','深绿登山鞋/工装靴'],
+    '火': ['橘色/暖色系运动鞋','深棕切尔西靴','酒红帆布鞋/板鞋','暖色系老爹鞋'],
+    '土': ['驼色短靴/切尔西靴','棕色乐福鞋','卡其色帆布鞋/板鞋','奶茶色运动鞋/老爹鞋'],
+    '金': ['白色/银色系运动鞋/板鞋','银色老爹鞋','浅灰皮鞋/乐福鞋','米白色帆布鞋'],
+    '水': ['黑色运动鞋/慢跑鞋','深蓝帆布鞋/板鞋','黑白拼色板鞋','黑色切尔西靴/工装靴']
+  };
+  // 从每个喜用五行中随机选1个鞋子
+  const shoeRecs = xiList.map(w => {
+    const opts = shoeOptions[w] || shoeOptions['木'];
+    return opts[Math.floor(Math.random() * opts.length)];
+  });
+
+  // 配饰（每个喜用五行随机推荐1-2个，不去重，保证内容丰富）
+  const accRecs = xiList.flatMap(w => {
+    const opts = ACCESSORIES[w] || ACCESSORIES['木'];
+    const count = Math.random() > 0.5 ? 2 : 1; // 随机推荐1-2个
+    const shuffled = opts.sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, count);
+  });
+
+  // 天气描述（活人感）
+  let weatherHtml = '';
+  if (weather) {
+    const { maxTemp, minTemp, weatherCode } = weather;
+    const weatherText = weatherCodeToText(weatherCode);
+    const isRain = weatherCode >= 50 && weatherCode <= 99;
+    let humanHint = '';
+    if (minTemp <= -5) humanHint = '今天真的很冷，羽绒服围巾手套全副武装，保暖比什么都重要。';
+    else if (minTemp <= 5) humanHint = '厚外套加毛衣，出门记得把围巾也带上，脖子暖了全身都暖。';
+    else if (minTemp <= 12) humanHint = '今天温差比较大，早晚记得穿外套，中午一件长袖就好啦。';
+    else if (minTemp <= 18 && maxTemp <= 25) humanHint = '今天温度刚刚好，薄外套或长袖都合适，出门很舒服的一天。';
+    else if (minTemp <= 18 && maxTemp > 25) humanHint = '早晚有点凉，带件薄外套备用；中午会很热，短袖就够了。';
+    else if (minTemp <= 24) humanHint = '今天不冷不热，短袖或薄衬衫就够了，出门很轻松。';
+    else humanHint = '今天偏热，夏装出门，记得涂防晒，带瓶水。';
+    const rainHint = isRain ? '对了今天有雨，包里放把伞哦。' : '';
+    weatherHtml = '<div class="weather-tag">' + svgIcon('icon-leaf','#4a6fa8',14) + ' ' + weatherText + ' · ' + minTemp + '～' + maxTemp + '℃</div>' +
+      '<div style="margin-top:6px;font-size:13px;">' + humanHint + rainHint + '</div>';
+  } else {
+    const cityHint = noCity
+      ? '<div style="font-size:12px;color:var(--text-muted);margin-top:6px;">没有填写所在地，所以先给你一个通用建议～</div>'
+      : '';
+    weatherHtml = '<div>今天适合穿<strong>' + colorDesc + '</strong>的衣服。' + cityHint + '</div>';
+  }
+
+  // 搭配建议（基于五行特性，活人感表述）
+  const styleTips = {
+    '木': '今天适合有点"松弛感"的搭配，上松下紧或层叠穿法都很适合你。棉麻或亚麻材质会让整个人看起来更舒展。',
+    '火': '今天适合有点"亮"的搭配，暖色调上衣配简单下装，让注意力自然集中在你身上。真丝或轻薄材质会加分。',
+    '土': '今天适合"大地色系"的稳重搭配，同色系深浅叠穿特别显质感。羊绒或灯芯绒材质会让整个人看起来很"贵"。',
+    '金': '今天适合"干净利落"的搭配，白色或浅色上装配简洁下装，不需要多余装饰。缎面或丝光棉会让你看起来很精致。',
+    '水': '今天适合"安静有质感"的搭配，深色上装配浅色下装，简单但有细节。防风面料或深色丹宁会让整个人看起来很"定"。'
+  };
+  const styleTip = xiList.map(w => styleTips[w]).join('；');
+
+  // 材质建议（从WX_MATERIALS取，每个喜用五行推荐一种材质）
+  const materialSuggestions = xiList.map(w => {
+    const mats = WX_MATERIALS[w] || ['棉质'];
+    return mats[Math.floor(Math.random() * mats.length)];
+  });
+
+  // 组装输出（充实内容）
+  let outfitHtml = '';
+
+  // 搭配建议（顶部）
+  outfitHtml += '<div style="font-size:13px;line-height:1.8;color:var(--text-secondary);margin-bottom:10px;padding:8px 12px;background:var(--surface2);border-radius:var(--radius-sm);">' +
+    styleTip +
+    '</div>';
+
+  // 上装
+  outfitHtml += '<div style="margin:8px 0;">' +
+    '<div style="font-weight:700;font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">' +
+    '<span style="font-size:11px;color:var(--accent);">👕</span>上装推荐' +
+    '</div>' +
+    '<div style="font-size:13px;line-height:1.8;color:var(--text-primary);">' + topRecs.join(' / ') + '</div>' +
+    '<div style="font-size:11px;color:var(--text-muted);margin-top:3px;">材质推荐：' + materialSuggestions.slice(0,2).join('、') + '</div>' +
+    '</div>';
+
+  // 下装
+  outfitHtml += '<div style="margin:8px 0;">' +
+    '<div style="font-weight:700;font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">' +
+    '<span style="font-size:11px;color:var(--accent);">👖</span>下装推荐' +
+    '</div>' +
+    '<div style="font-size:13px;line-height:1.8;color:var(--text-primary);">' + bottomRecs.join(' / ') + '</div>' +
+    '</div>';
+
+  // 连衣裙（仅女性）
+  if (!isMale) {
+    outfitHtml += '<div style="margin:8px 0;">' +
+      '<div style="font-weight:700;font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">' +
+      '<span style="font-size:11px;color:var(--accent);">👗</span>或连衣裙' +
+      '</div>' +
+      '<div style="font-size:13px;line-height:1.8;color:var(--text-primary);">' + onePiece + '</div>' +
+      '</div>';
+  }
+
+  // 鞋子
+  outfitHtml += '<div style="margin:8px 0;">' +
+    '<div style="font-weight:700;font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">' +
+    '<span style="font-size:11px;color:var(--accent);">👟</span>鞋子推荐' +
+    '</div>' +
+    '<div style="font-size:13px;line-height:1.8;color:var(--text-primary);">' + shoeRecs.join(' / ') + '</div>' +
+    '</div>';
+
+  // 配饰（多个，不去重）
+  outfitHtml += '<div style="margin:8px 0;">' +
+    '<div style="font-weight:700;font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">' +
+    '<span style="font-size:11px;color:var(--accent);">💍</span>配饰推荐' +
+    '</div>' +
+    '<div style="font-size:13px;line-height:1.8;color:var(--text-primary);">' + accRecs.join(' / ') + '</div>' +
+    '<div style="font-size:11px;color:var(--text-muted);margin-top:3px;">没有类似的配饰也没关系，干干净净的你也很好～</div>' +
+    '</div>';
+
+  return {
+    weatherTag: weather ? weatherCodeToText(weather.weatherCode) + ' · ' + weather.minTemp + '～' + weather.maxTemp + '℃' : null,
+    text: '<div>今天五行喜<strong>' + xiList.join('、') + '</strong>，适合穿<strong>' + colorDesc + '</strong>系的衣服哦。</div>' +
+      (weather ? '<div style="margin:8px 0;">' + weatherHtml + '</div>' : '') +
+      '<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">' + outfitHtml + '</div>'
+  };
+}
+
+// ============================================================
+// UI
+// ============================================================
+function switchPage(page) {
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.getElementById('tab-'+page).classList.add('active');
+}
+function showLoading(t) { document.getElementById('loading-text').textContent=t||'计算中…'; document.getElementById('loading').classList.add('show'); }
+function hideLoading() { document.getElementById('loading').classList.remove('show'); }
+function showToast(msg) {
+  const t = document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+function resetForm() {
+  document.getElementById('result-section').style.display='none';
+  document.getElementById('form-card').style.display='block';
+  document.getElementById('weather-status').textContent='';
+  document.getElementById('result-tabs').style.display='none';
+  weatherData = null;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function switchResultDay(day) {
+  document.getElementById('result-today').style.display = day === 'today' ? 'block' : 'none';
+  document.getElementById('result-tomorrow').style.display = day === 'tomorrow' ? 'block' : 'none';
+  document.getElementById('tab-today').classList.toggle('active', day === 'today');
+  document.getElementById('tab-tomorrow').classList.toggle('active', day === 'tomorrow');
+}
+
+let cityFetchTimer = null;
+function onCityInput() {
+  const city = document.getElementById('current-place').value.trim();
+  clearTimeout(cityFetchTimer);
+  if (city.length >= 2) {
+    cityFetchTimer = setTimeout(() => {
+      fetchWeather(city).then(d => { weatherData = d; });
+    }, 800);
+  }
+}
+
+function initSelects() {
+  const yearSel = document.getElementById('birth-year');
+  const curYear = new Date().getFullYear();
+  for (let y = curYear-5; y >= 1920; y--) {
+    const opt = document.createElement('option');
+    opt.value=y; opt.textContent=y+' 年';
+    if(y===1993) opt.selected=true;
+    yearSel.appendChild(opt);
+  }
+  const monthSel = document.getElementById('birth-month');
+  for(let m=1;m<=12;m++){const o=document.createElement('option');o.value=m;o.textContent=m+' 月';monthSel.appendChild(o);}
+  const daySel = document.getElementById('birth-day');
+  for(let d=1;d<=31;d++){const o=document.createElement('option');o.value=d;o.textContent=d+' 日';daySel.appendChild(o);}
+}
+
+// ============================================================
+// 主计算
+// ============================================================
+async function calculate() {
+  const year = parseInt(document.getElementById('birth-year').value);
+  const month = parseInt(document.getElementById('birth-month').value);
+  const day = parseInt(document.getElementById('birth-day').value);
+  const hour = parseInt(document.getElementById('birth-hour').value);
+  const currentPlace = document.getElementById('current-place').value || '';
+  const gender = document.getElementById('gender').value;
+
+  if (!year||!month||!day) { showToast('请填写完整的出生年月日'); return; }
+
+  showLoading('正在排八字，获取今日天气…');
+
+  if (!weatherData && currentPlace.length >= 2) {
+    weatherData = await fetchWeather(currentPlace);
+  }
+
+  setTimeout(() => {
+    try {
+      const bazi = calcBazi(year, month, day, hour);
+      const wxCount = countWx(bazi);
+      const xiyong = calcXiyong(bazi, wxCount);
+      const today = new Date();
+      const todayGanZhi = getDayGanZhi(today.getFullYear(), today.getMonth()+1, today.getDate());
+      const primaryXi = xiyong.xi[0] || '木';
+      const jinjiWx = getJinjiWx(xiyong.ji, todayGanZhi);
+      const vibeKey = getTodayVibeKey(xiyong.xi, todayGanZhi);
+      const vibeTexts = VIBE_TEXT[vibeKey] || VIBE_TEXT['平'];
+      const vibeText = vibeTexts[Math.floor(Math.random()*vibeTexts.length)];
+      const emotionState = getEmotionState(todayGanZhi, xiyong);
+      const foodArr = WX_FOODS[primaryXi] || WX_FOODS['木'];
+      const foodRec = foodArr[Math.floor(Math.random()*foodArr.length)];
+      const foodRec2 = foodArr[(Math.floor(Math.random()*foodArr.length)+1)%foodArr.length];
+      const clothing = getClothingAdvice(xiyong.xi, weatherData, !currentPlace, gender);
+      const dramaList = DRAMA_DB[emotionState] || DRAMA_DB['平稳'];
+      const drama = dramaList[Math.floor(Math.random()*dramaList.length)];
+      const musicList = MUSIC_DB[primaryXi] || MUSIC_DB['木'];
+      const music = musicList[Math.floor(Math.random()*musicList.length)];
+      const dsList = DONGSHELJ_DB[jinjiWx] || DONGSHELJ_DB['火'];
+      const ageEmpathy = getAgeEmpathy(year, month, day, gender);
+
+      renderResult({
+        bazi, wxCount, xiyong, today, todayGanZhi,
+        primaryXi, jinjiWx, vibeKey, vibeText, emotionState,
+        foodRec, foodRec2, clothing, drama, music, dsList, ageEmpathy,
+        currentPlace, year, month, day, gender
+      });
+
+      hideLoading();
+      document.getElementById('form-card').style.display='none';
+      document.getElementById('result-section').style.display='block';
+      window.scrollTo({top:0,behavior:'smooth'});
+    } catch(e) {
+      hideLoading();
+      showToast('计算出了问题，请检查日期填写');
+      console.error(e);
+    }
+  }, 900);
+}
+
+function renderResult(data) {
+  const { bazi, wxCount, xiyong, today, todayGanZhi, primaryXi, jinjiWx,
+    vibeKey, vibeText, emotionState, foodRec, foodRec2, clothing, drama, music,
+    dsList, ageEmpathy, currentPlace, year, month, day, gender } = data;
+
+  // Header — 包含命格标签
+  const geTagHtml = xiyong.geType !== 'shenqiang' && xiyong.geType !== 'shenruo'
+    ? `<span class="minge-tag ${xiyong.geType === 'zhuanwang' ? 'zhuanwang' : 'congge'}">${xiyong.geLabel}</span>`
+    : '';
+  document.getElementById('result-title').innerHTML =
+    `日主${bazi[2].gan}（${GAN_WX[GAN.indexOf(bazi[2].gan)]}）· 喜${xiyong.xi.join('、')}${geTagHtml}`;
+  document.getElementById('result-bazi-str').textContent = bazi.map(c=>c.gan+c.zhi).join(' ');
+  document.getElementById('result-today-str').textContent =
+    `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日` +
+    (currentPlace ? ` · ${currentPlace}` : '') +
+    (weatherData ? ` · ${weatherData.minTemp}～${weatherData.maxTemp}℃` : '');
+
+  // 年龄共情
+  document.getElementById('age-empathy').innerHTML = ageEmpathy;
+
+  // 八字
+  const bd = document.getElementById('bazi-display'); bd.innerHTML='';
+  for(const col of bazi){
+    const gw=GAN_WX[GAN.indexOf(col.gan)], zw=ZHI_WX[ZHI.indexOf(col.zhi)];
+    bd.innerHTML+=`<div class="bazi-col"><div class="bazi-col-label">${col.label}</div><div class="bazi-col-gan">${col.gan}</div><div class="bazi-col-zhi">${col.zhi}</div><span class="bazi-col-wx ${WX_COLOR_CLASS[gw]}">${gw}</span><span class="bazi-col-wx ${WX_COLOR_CLASS[zw]}">${zw}</span></div>`;
+  }
+
+  // 喜忌
+  const xr = document.getElementById('xiyong-row');
+  xr.innerHTML = '<span class="xiyong-label">今日喜：</span>';
+  for(const w of xiyong.xi) xr.innerHTML += `<span class="xiyong-tag xi">${w}</span>`;
+  xr.innerHTML += '<span class="xiyong-label" style="margin-left:12px">今日忌：</span>';
+  for(const w of xiyong.ji) xr.innerHTML += `<span class="xiyong-tag ji">✗ ${w}</span>`;
+
+  // 今日能量速报
+  const vibeEmojis = {'旺':'◈','顺':'◇','平':'○','弱':'◌','冲':'◉'};
+  document.getElementById('today-vibe').innerHTML = `
+    <div class="today-vibe-title">✦ TODAY'S ENERGY · ${vibeKey}</div>
+    <div class="today-vibe-text">${vibeEmojis[vibeKey]||'○'}  ${vibeText}</div>`;
+
+  // 穿衣模块（占据整行）
+  const clothingHtml = `
+    <div class="module-card full-width">
+      <div class="module-icon">${svgIcon('icon-clothes','#1a1a1a',28)}</div>
+      <div class="module-title">今日穿搭建议</div>
+      <div class="module-content">
+        ${clothing.weatherTag ? `<div class="weather-tag">${svgIcon('icon-leaf','#4a6fa8',14)} ${clothing.weatherTag}</div>` : ''}
+        ${clothing.text}
+      </div>
+    </div>`;
+
+  // 饮食模块
+  const jinjiDetail = JINJI_FOOD_DETAIL[jinjiWx] || JINJI_FOOD_DETAIL['火'];
+  const jinjiEnding = jinjiDetail.ending[Math.floor(Math.random()*jinjiDetail.ending.length)];
+  const foodHtml = `
+    <div class="module-card">
+      <div class="module-icon">${svgIcon('icon-food','#1a1a1a',28)}</div>
+      <div class="module-title">今天吃什么</div>
+      <div class="module-content">
+        今天适合来一份<strong>${foodRec}</strong>。${foodRec2 !== foodRec ? `或者<strong>${foodRec2}</strong>。` : ''}
+        <br><br>今天忌${jinjiWx}，建议少吃<strong>${jinjiDetail.avoid}</strong>。${jinjiDetail.examples}。<br><br>${jinjiEnding}
+      </div>
+    </div>`;
+
+  // 剧集模块
+  const dramaHtml = `
+    <div class="module-card">
+      <div class="module-icon">${svgIcon('icon-drama','#1a1a1a',28)}</div>
+      <div class="module-title">今日推荐剧集</div>
+      <div class="module-content">
+        <strong>${drama.name}</strong> ${drama.ep}<br>
+        <span style="color:var(--text-muted);font-size:12px;line-height:1.6;">${drama.why}</span>
+      </div>
+    </div>`;
+
+  // 音乐模块
+  const musicHtml = `
+    <div class="module-card">
+      <div class="module-icon">${svgIcon('icon-music','#1a1a1a',28)}</div>
+      <div class="module-title">今日推荐歌曲</div>
+      <div class="module-content">
+        <strong>${music.name}</strong> — ${music.artist}<br>
+        <span style="color:var(--text-muted);font-size:12px;line-height:1.7;">${music.mood}</span>
+      </div>
+    </div>`;
+
+  document.getElementById('modules-grid').innerHTML =
+    '<div class="modules-left">' + clothingHtml + '</div>' +
+    '<div class="modules-right">' + foodHtml + dramaHtml + musicHtml + '</div>';
+
+  // 今日能量碎片——从事件库随机选4条
+  const events = ENERGY_EVENTS[primaryXi] || ENERGY_EVENTS['木'];
+  const shuffled = [...events].sort(() => Math.random() - 0.5);
+  const picked = shuffled.slice(0, 4);
+  document.getElementById('energy-card').innerHTML = `
+    <div class="card-title">✦ 可以去做的小小治愈事件</div>
+    <div class="energy-strip">
+      ${picked.map((ev, i) => `<div class="energy-item">${svgIcon(ENERGY_ICONS[i % ENERGY_ICONS.length],'#5a5a5a',18)} ${ev}</div>`).join('')}
+    </div>`;
+
+  // 断舍离
+  document.getElementById('dongshelj-card').innerHTML = `
+    <div class="card-title">✦ 今日断舍离</div>
+    <div class="card-subtitle">今天适合清理这些小东西哦～</div>
+    <ul class="dongshelj-list">
+      ${dsList.map(item => `<li><span class="dongshelj-icon">${svgIcon('icon-broom','#3b7dd8',16)}</span>${item}</li>`).join('')}
+    </ul>`;
+
+  // ===== 明日运势预览 =====
+  renderTomorrow(bazi, xiyong, weatherData, gender, year, month, day);
+}
+
+// ============================================================
+// 明日运势渲染
+// ============================================================
+function renderTomorrow(bazi, xiyong, weatherData, gender, birthYear, birthMonth, birthDay) {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowGanZhi = getDayGanZhi(tomorrow.getFullYear(), tomorrow.getMonth()+1, tomorrow.getDate());
+
+  const primaryXi = xiyong.xi[0] || '木';
+  const tzw = ZHI_WX[ZHI.indexOf(tomorrowGanZhi.zhi)];
+  const tgw = GAN_WX[GAN.indexOf(tomorrowGanZhi.gan)];
+
+  let score = 0;
+  if (xiyong.xi.includes(tzw)) score += 2;
+  if (xiyong.xi.includes(tgw)) score += 1;
+
+  let vibeKey = '平';
+  if (score >= 3) vibeKey = '旺';
+  else if (score >= 1) vibeKey = '顺';
+
+  const vibeTexts = VIBE_TEXT[vibeKey] || VIBE_TEXT['平'];
+  const vibeText = vibeTexts[0];
+  const tomorrowEmotion = getEmotionState(tomorrowGanZhi, xiyong);
+  const tomorrowJinji = getJinjiWx(xiyong.ji, tomorrowGanZhi);
+
+  // 明天穿搭
+  const hasTomorrowWeather = weatherData && weatherData.tomorrowMax !== undefined;
+  const tomorrowWeather = hasTomorrowWeather ? {
+    maxTemp: weatherData.tomorrowMax, minTemp: weatherData.tomorrowMin, weatherCode: weatherData.tomorrowCode
+  } : null;
+  const tomorrowClothing = getClothingAdvice(xiyong.xi, tomorrowWeather, !weatherData, gender);
+
+  // 明天饮食
+  const foodArr = WX_FOODS[primaryXi] || WX_FOODS['木'];
+  const tomorrowFood = foodArr[Math.floor(Math.random()*foodArr.length)];
+  const tomorrowFood2 = foodArr[(Math.floor(Math.random()*foodArr.length)+2)%foodArr.length];
+  const tomorrowJinjiDetail = JINJI_FOOD_DETAIL[tomorrowJinji] || JINJI_FOOD_DETAIL['火'];
+  const tomorrowJinjiEnding = tomorrowJinjiDetail.ending[Math.floor(Math.random()*tomorrowJinjiDetail.ending.length)];
+
+  // 明天剧集
+  const dramaList = DRAMA_DB[tomorrowEmotion] || DRAMA_DB['平稳'];
+  const tomorrowDrama = dramaList[Math.floor(Math.random()*dramaList.length)];
+
+  // 明天音乐
+  const musicList = MUSIC_DB[primaryXi] || MUSIC_DB['木'];
+  const tomorrowMusic = musicList[Math.floor(Math.random()*musicList.length)];
+
+  // 明天治愈事件
+  const events = ENERGY_EVENTS[primaryXi] || ENERGY_EVENTS['木'];
+  const shuffled = [...events].sort(() => Math.random() - 0.5);
+  const picked = shuffled.slice(0, 4);
+
+  // 明天断舍离
+  const dsList = DONGSHELJ_DB[tomorrowJinji] || DONGSHELJ_DB['火'];
+
+  // 能量速报图标
+  const vibeEmojis = {'旺':'◈','顺':'◇','平':'○','弱':'◌','冲':'◉'};
+
+  const tomorrowHtml = '' +
+    '<div class="card">' +
+      '<div class="result-header">' +
+        '<div class="avatar-ring" id="result-icon-tomorrow">' +
+          '<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#3b7dd8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
+            '<circle cx="14" cy="14" r="5"/>' +
+            '<line x1="14" y1="2" x2="14" y2="6"/>' +
+            '<line x1="14" y1="22" x2="14" y2="26"/>' +
+            '<line x1="2" y1="14" x2="6" y2="14"/>' +
+            '<line x1="22" y1="14" x2="26" y2="14"/>' +
+            '<line x1="5.5" y1="5.5" x2="8.3" y2="8.3"/>' +
+            '<line x1="19.7" y1="19.7" x2="22.5" y2="22.5"/>' +
+            '<line x1="22.5" y1="5.5" x2="19.7" y2="8.3"/>' +
+            '<line x1="8.3" y1="19.7" x2="5.5" y2="22.5"/>' +
+          '</svg>' +
+        '</div>' +
+        '<div>' +
+          '<div class="result-name">日主' + bazi[2].gan + '（' + GAN_WX[GAN.indexOf(bazi[2].gan)] + '）· 喜' + xiyong.xi.join('、') + '</div>' +
+          '<div class="result-sub">' + bazi.map(c=>c.gan+c.zhi).join(' ') + '</div>' +
+          '<div class="result-date">' + tomorrow.getFullYear() + '年' + (tomorrow.getMonth()+1) + '月' + tomorrow.getDate() + '日' + (hasTomorrowWeather ? ' · ' + tomorrowWeather.minTemp + '～' + tomorrowWeather.maxTemp + '℃' : '') + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="today-vibe">' +
+        '<div class="today-vibe-title">✦ TOMORROW\'S ENERGY · ' + vibeKey + '</div>' +
+        '<div class="today-vibe-text">' + (vibeEmojis[vibeKey]||'○') + '  ' + vibeText + '</div>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="modules-grid">' +
+      '<div class="modules-left">' +
+        '<div class="module-card">' +
+          '<div class="module-icon">' + svgIcon('icon-clothes','#1a1a1a',28) + '</div>' +
+          '<div class="module-title">明日穿搭建议</div>' +
+          '<div class="module-content">' +
+            (tomorrowClothing.weatherTag ? '<div class="weather-tag">' + svgIcon('icon-leaf','#4a6fa8',14) + ' ' + tomorrowClothing.weatherTag + '</div>' : '') +
+            tomorrowClothing.text +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="modules-right">' +
+        '<div class="module-card">' +
+          '<div class="module-icon">' + svgIcon('icon-food','#1a1a1a',28) + '</div>' +
+          '<div class="module-title">明天吃什么</div>' +
+          '<div class="module-content">' +
+            '明天适合来一份<strong>' + tomorrowFood + '</strong>。' + (tomorrowFood2 !== tomorrowFood ? '或者<strong>' + tomorrowFood2 + '</strong>。' : '') +
+            '<br><br>明天忌' + tomorrowJinji + '，建议少吃<strong>' + tomorrowJinjiDetail.avoid + '</strong>。<br><br>' + tomorrowJinjiEnding +
+          '</div>' +
+        '</div>' +
+        '<div class="module-card">' +
+          '<div class="module-icon">' + svgIcon('icon-drama','#1a1a1a',28) + '</div>' +
+          '<div class="module-title">明日推荐剧集</div>' +
+          '<div class="module-content">' +
+            '<strong>' + tomorrowDrama.name + '</strong> ' + tomorrowDrama.ep + '<br>' +
+            '<span style="color:var(--text-muted);font-size:12px;line-height:1.6;">' + tomorrowDrama.why + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="module-card">' +
+          '<div class="module-icon">' + svgIcon('icon-music','#1a1a1a',28) + '</div>' +
+          '<div class="module-title">明日推荐歌曲</div>' +
+          '<div class="module-content">' +
+            '<strong>' + tomorrowMusic.name + '</strong> — ' + tomorrowMusic.artist + '<br>' +
+            '<span style="color:var(--text-muted);font-size:12px;line-height:1.7;">' + tomorrowMusic.mood + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="card">' +
+      '<div class="card-title">✦ 可以去做的小小治愈事件</div>' +
+      '<div class="energy-strip">' +
+        picked.map(function(ev, i) { return '<div class="energy-item">' + svgIcon(ENERGY_ICONS[i % ENERGY_ICONS.length],'#5a5a5a',18) + ' ' + ev + '</div>'; }).join('') +
+      '</div>' +
+    '</div>' +
+
+    '<div class="card">' +
+      '<div class="card-title">✦ 明日断舍离</div>' +
+      '<div class="card-subtitle">明天适合清理这些小东西哦～</div>' +
+      '<ul class="dongshelj-list">' +
+        dsList.map(function(item) { return '<li><span class="dongshelj-icon">' + svgIcon('icon-broom','#3b7dd8',16) + '</span>' + item + '</li>'; }).join('') +
+      '</ul>' +
+    '</div>';
+
+  document.getElementById('result-tomorrow').innerHTML = tomorrowHtml;
+  document.getElementById('result-tabs').style.display = 'flex';
+}
+
+initSelects();
+</script>
+</body>
+</html>
