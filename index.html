@@ -262,18 +262,12 @@
   /* ===== MODULES ===== */
   .modules-grid {
     display: flex; gap: 16px; margin-bottom: 20px;
-    align-items: stretch; min-height: 420px;
+    align-items: flex-start;
   }
-  .modules-left { flex: 1.1; min-width: 0; display: flex; flex-direction: column; }
-  .modules-left .module-card { flex: 1; min-height: 0; }
+  .modules-left { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
   .modules-right {
-    flex: 0.9; min-width: 0;
+    flex: 1; min-width: 0;
     display: flex; flex-direction: column; gap: 12px;
-  }
-  .modules-right .module-card {
-    flex: 0 1 auto;
-    display: flex; flex-direction: column;
-    justify-content: flex-start;
   }
   .module-card {
     background: var(--surface);
@@ -300,20 +294,6 @@
     color: var(--text-secondary);
     font-weight: 600;
     line-height: 1.5;
-  }
-
-  /* ===== 天气标签 ===== */
-  .weather-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    background: #edf2fb;
-    color: #4a6fa8;
-    border-radius: 20px;
-    padding: 3px 10px;
-    font-size: 12px;
-    font-weight: 600;
-    margin-bottom: 8px;
   }
 
   /* ===== DIVIDER ===== */
@@ -441,9 +421,6 @@
     color: var(--text-primary); font-style: italic; margin: 16px 0; font-size: 16px;
   }
 
-  /* ===== 天气获取状态 ===== */
-  #weather-status { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
-
   /* ===== 今天/明天切换Tab ===== */
   .result-tabs { display: flex; gap: 6px; margin-bottom: 20px; }
   .result-tab {
@@ -521,11 +498,6 @@
             <option value="22">亥时（21:00-23:00）</option>
           </select>
         </div>
-        <div class="form-group full">
-          <label class="form-label">当前所在城市<span style="font-size:11px;color:#3b7dd8;font-weight:600;margin-left:4px;">（请打字输入所在市）</span></label>
-          <input class="form-input" id="current-place" placeholder="例：赤峰、北京、成都" oninput="onCityInput()" />
-          <span id="weather-status"></span>
-        </div>
         <div class="form-group">
           <label class="form-label">性别</label>
           <select class="form-select" id="gender">
@@ -580,10 +552,10 @@
 
       <!-- 模块 -->
       <div class="modules-grid" id="modules-grid"></div>
-      <!-- 今日能量碎片 -->
-      <div class="card" id="energy-card"></div>
-      <!-- 断舍离 -->
-      <div class="card" id="dongshelj-card"></div>
+  <!-- 今日能量碎片（内容已并入右侧网格，此处隐藏） -->
+  <div class="card" id="energy-card" style="display:none;"></div>
+  <!-- 断舍离（内容已并入右侧网格，此处隐藏） -->
+  <div class="card" id="dongshelj-card" style="display:none;"></div>
       <!-- 时辰身心状态 -->
       <div class="shichen-card" id="shichen-card"></div>
       </div><!-- /result-today -->
@@ -925,33 +897,518 @@ const MUSIC_DB = {
   ]
 };
 
-// 断舍离（按忌神，简洁直白表述）
+// 断舍离（按忌神，500条口语化清单，覆盖全场景）
 const DONGSHELJ_DB = {
   '火': [
-    '没有气的打火机',
     '断了但还留着的那根充电线',
-    '很久没点燃过的蜡烛'
+    '接口松了的旧充电线',
+    '不再兼容的旧手机数据线',
+    '缠绕成一团解不开的旧线',
+    '不再用的旧Type-C转接头',
+    '不再用的旧苹果30针数据线',
+    '线皮裂了的旧电源线',
+    '不再用的旧HDMI线',
+    '不再用的旧音频线',
+    '不再用的旧网线',
+    '坏掉的旧延长线插排',
+    '接口氧化的旧数据线',
+    '不再用的旧转接线一堆',
+    '不再用的旧USB集线器',
+    '不再用的旧读卡器线',
+    '坏了却不想花钱修的小家电',
+    '闲置的电磁炉已经落灰',
+    '坏掉的电热水壶',
+    '不再用的旧电饼铛',
+    '坏掉的迷你小烤箱',
+    '不再用的旧豆浆机',
+    '坏掉的破壁机',
+    '不再用的旧电炖锅',
+    '坏了的电饭煲内胆涂层掉了',
+    '不再用的旧酸奶机',
+    '坏掉的空气炸锅',
+    '不再用的旧电烤盘',
+    '坏掉的煮蛋器',
+    '不再用的旧咖啡机',
+    '坏掉的微波炉转盘不转了',
+    '坏掉的吹风机',
+    '坏掉的卷发棒',
+    '不再用的旧拉直板',
+    '坏掉的电动牙刷',
+    '过期的电动牙刷头',
+    '不再用的旧美容仪',
+    '坏掉的电动剃须刀',
+    '不再用的旧美甲灯',
+    '坏掉的理发器',
+    '不再用的旧洁面仪',
+    '过期的旧电动牙刷充电座',
+    '不再用的旧鼻毛修剪器',
+    '坏掉的旧足浴盆',
+    '不再用的旧按摩仪',
+    '坏掉的旧电热梳',
+    '没气的打火机',
+    '过期的旧电池',
+    '漏液的旧电池已经腐蚀了',
+    '不再用的旧充电宝',
+    '充不进电的旧充电宝',
+    '不再用的旧电池充电器',
+    '不再用的旧干电池散了一堆',
+    '过期的旧纽扣电池',
+    '不再用的旧18650电池',
+    '坏掉的旧万能充',
+    '不再用的旧蓄电池',
+    '过期的旧手机电池',
+    '不再用的旧电子打火机',
+    '不再用的旧电池收纳盒',
+    '过期的旧手电筒电池',
+    '损坏的旧台灯',
+    '不再用的旧小夜灯',
+    '烧坏的旧灯泡',
+    '不再用的旧LED灯带',
+    '坏掉的旧充电台灯',
+    '不再用的旧露营灯',
+    '坏掉的旧壁灯',
+    '不再用的旧感应灯',
+    '坏掉的旧书灯',
+    '不再用的旧灯座',
+    '坏了的旧化妆镜灯',
+    '不再用的旧厨房灯管',
+    '坏掉的旧落地灯',
+    '不再用的旧床头灯',
+    '烧坏的旧日光灯管',
+    '旧的电热毯',
+    '不再用的旧暖手宝',
+    '坏掉的旧暖宝宝',
+    '不再用的旧小太阳取暖器',
+    '坏掉的旧电热垫',
+    '不再用的旧暖脚宝',
+    '坏掉的旧电暖器',
+    '不再用的旧暖风机',
+    '坏掉的旧电热毯控制器',
+    '不再用的旧电热杯',
+    '坏掉的旧暖桌垫',
+    '不再用的旧热水袋',
+    '坏掉的旧电热手套',
+    '不再用的旧车载加热杯',
+    '过期的旧暖贴还没用',
+    '已经挥发完的香薰蜡烛',
+    '不再用的旧蜡烛底座',
+    '干掉的旧固体香薰',
+    '不再用的旧蜡烛起',
+    '过期的旧电子熏香',
+    '不再用的旧香薰炉',
+    '已经没味道的旧香薰石',
+    '不再用的旧精油灯',
+    '过期的旧无火香薰',
+    '不再用的旧蜡烛头碎了一堆',
   ],
   '金': [
-    '不再戴的旧首饰',
     '生锈的剪刀或指甲刀',
-    '钱包里过期的卡片'
+    '生锈了的菜刀',
+    '变钝的削皮刀',
+    '氧化的铝锅',
+    '掉漆的不锈钢盆',
+    '变形的金属蒸笼',
+    '生锈的金属漏勺',
+    '凹进去的平底锅',
+    '氧化发黑的银勺',
+    '把手松了的炒锅',
+    '生锈的金属夹子',
+    '变形的烤网',
+    '掉渣的不粘锅涂层已经脱落的锅',
+    '接口松动的金属水龙头',
+    '颜色发暗的金属筷架',
+    '生锈的螺丝钉和螺母散装一盒',
+    '不知道配什么锁的钥匙',
+    '断了头的十字螺丝刀',
+    '生锈的扳手',
+    '不再需要的各种膨胀螺丝',
+    '干了的502胶水空瓶',
+    '用不上的卷尺',
+    '生锈的铁锤',
+    '不再用的钉子盒',
+    '闲置的老虎钳',
+    '刀刃卷了的裁纸刀',
+    '不知道开什么的钥匙串',
+    '松了的门把手锁芯',
+    '生锈的门铰链',
+    '不再用的工具箱',
+    '坏掉的U盘',
+    '坏掉的移动硬盘',
+    '按键失灵的旧鼠标',
+    '键盘上有键弹不回来的旧键盘',
+    '不再用的旧手机充电头',
+    '缠绕成一团解不开的旧耳机',
+    '过时的MP3播放器',
+    '不再用的旧手机支架',
+    '坏掉的电子秤',
+    '不再用的旧路由器',
+    '过时的数码相机',
+    '不再用的读卡器',
+    '坏掉的蓝牙音箱',
+    '不再用的旧平板电脑',
+    '过时的游戏手柄',
+    '过期的宣传单和优惠券',
+    '不再需要的名片',
+    '写不出水的圆珠笔',
+    '漏墨的签字笔',
+    '干透了的马克笔',
+    '过期的发票收据攒了一厚沓',
+    '不再需要的旧合同复印件',
+    '写不出字的荧光笔',
+    '没用完但笔帽丢了的铅笔',
+    '过期的体检报告',
+    '不再需要的快递单',
+    '旧的不干胶标签纸只剩几张',
+    '空了的修正带',
+    '没用过的草稿纸已经发黄',
+    '不再需要的各种说明书',
+    '氧化的廉价耳环',
+    '褪色的合金项链',
+    '变了色的铜手镯',
+    '掉钻的饰品',
+    '断了链的旧项链',
+    '不再戴的旧手表',
+    '氧化的银戒指',
+    '不再用的领带夹',
+    '褪色的胸针',
+    '坏掉的机械表',
+    '不再戴的旧戒指',
+    '发黑的铜扣腰带',
+    '变形的金属手镯',
+    '不再用的金属发夹',
+    '氧化发黄的旧眼镜框',
+    '用钝了的订书机',
+    '夹不住东西的燕尾夹散了一堆',
+    '不再用的金属书立',
+    '坏掉的机械铅笔',
+    '空了的笔芯盒子',
+    '不再用的金属名片夹',
+    '生锈的回形针散了一盒',
+    '过期的墨水盒',
+    '坏掉的激光笔',
+    '不再用的金属文件夹',
+    '车内松动的手机支架',
+    '不再用的车载充电器',
+    '过期的车载灭火器',
+    '坏掉的车载香薰夹',
+    '不再用的旧雨伞骨架变形',
+    '车上攒了一堆过期的停车票',
+    '不再用的旧金属烛台',
+    '生锈的旧铁丝衣架',
+    '不再用的旧金属挂钩',
+    '变形的金属肥皂盒',
+    '不再用的旧不锈钢饭盒',
+    '生锈的旧铁皮饼干盒',
+    '不再用的旧钥匙扣已经生锈',
+    '坏掉的旧机械闹钟',
+    '不再用的旧金属相框',
   ],
   '木': [
-    '半死不活的绿植，留或弃，今天做个决定',
-    '已经落灰的干花',
-    '走路硌脚但没扔的旧鞋'
+    '起球严重的毛衣',
+    '领口已经松垮的T恤',
+    '发黄的旧衬衫',
+    '穿了很久袖口磨破的外套',
+    '小了穿不下的衣服',
+    '买了标签都没剪的旧衣服',
+    '过时的羽绒服已经不保暖了',
+    '洗了变形的运动裤',
+    '起球严重的针织开衫',
+    '领子磨破的polo衫',
+    '不再喜欢的旧卫衣',
+    '起毛边的旧外套',
+    '颜色褪得很厉害的旧裙子',
+    '买了一直没穿过的衬衫',
+    '袖口有污渍洗不掉的毛衣',
+    '变形的内衣肩带已经没弹性了',
+    '发黄的内裤',
+    '松垮的旧袜子有的还有破洞',
+    '变薄洗不白的旧床单',
+    '用了很久已经不保暖的旧被子',
+    '变形的旧睡衣',
+    '起球的旧毛毯',
+    '不配套的枕套',
+    '发黄的旧枕芯',
+    '洗了缩水的旧浴袍',
+    '穿久了松垮的旧拖鞋',
+    '磨损严重的旧围巾',
+    '买了一直没戴过的帽子',
+    '发黄的旧毛巾',
+    '起球的旧运动服',
+    '发霉的木砧板',
+    '用变形的木筷子',
+    '用裂了的木勺',
+    '发黑的木铲子',
+    '掉漆的木碗',
+    '变形的木蒸笼',
+    '发霉的竹蒸笼垫',
+    '不再用的木制筷子筒',
+    '裂缝的木制沙拉碗',
+    '发黑的木制锅铲手柄',
+    '用旧的木制擀面杖',
+    '发霉的竹制饭盒',
+    '不再用的木制杯垫',
+    '变形的木制案板',
+    '旧的一次性木筷子攒了一捆',
+    '不再翻看的旧杂志',
+    '过期的旧报纸',
+    '用不上的旧学习资料',
+    '考完不再看的复习资料',
+    '已经落灰的旧小说',
+    '买了但从未翻开的书',
+    '过期的旧日历本',
+    '写了一半就不写的旧笔记本',
+    '不再用的旧文具盒',
+    '过期的旧黄页电话簿',
+    '不再需要的旧教材',
+    '空了一半的旧手账本',
+    '不再看的旧漫画书',
+    '旧的活动传单宣传册',
+    '不再用的旧书签',
+    '破旧的靠垫芯已经塌了',
+    '洗了褪色的旧窗帘',
+    '不再用的旧桌布',
+    '起球的旧沙发套',
+    '发黄的旧抱枕',
+    '不再用的旧桌旗',
+    '磨损的旧地垫布艺款',
+    '不再用的旧浴帘',
+    '起球的旧毛绒玩具',
+    '变形的旧收纳布袋',
+    '不再用的旧围裙',
+    '发黄的旧餐垫',
+    '不再用的旧杯套',
+    '磨损的旧洗衣袋',
+    '不再用的旧鞋袋',
+    '已经枯萎救不活的绿植',
+    '落满灰的干花束',
+    '已经干枯的花瓶里的假花也旧了',
+    '不再用的旧花盆',
+    '闲置的旧花架',
+    '枯死的多肉植株连盆也没人管',
+    '过期的种子包',
+    '不再用的旧园艺剪',
+    '闲置的喷壶已经落灰',
+    '不再用的旧花肥',
+    '枯黄的水养植物',
+    '不再用的旧花盆托盘',
+    '发霉的旧水培容器',
+    '不再需要的旧营养土',
+    '不再用的旧种植盆',
+    '闲置的编织收纳篮已经变形',
+    '不再用的旧竹篮',
+    '脱线的旧毛线球',
+    '不再用的旧藤编筐',
+    '旧的草编包已经散了边',
+    '不再用的旧帆布袋攒了一堆',
+    '磨破的旧编织手提包',
+    '不再用的旧绒布袋',
+    '发霉的旧草席',
+    '不再用的旧棉麻围巾',
   ],
   '水': [
-    '浴室快用完的小样瓶',
-    '开了很久没用完的香水或精油',
-    '抽屉里没用过但舍不得扔的一次性洗漱用品'
+    '放了很久没吃的过期食物',
+    '冰箱冷冻超过半年的肉',
+    '开封超过72小时的饮料',
+    '过期的零食',
+    '过期的罐头食品',
+    '发霉的面包',
+    '过期的酸奶',
+    '开了很久没喝完的果汁',
+    '过期的速溶咖啡',
+    '放过期了的方便面',
+    '过期的巧克力已经长白斑了',
+    '冰箱里不知道放了多久的剩菜',
+    '过期的沙拉酱',
+    '开封太久的果酱',
+    '过期的蜂蜜瓶口已经结晶发硬',
+    '过期的调味品',
+    '开封半年以上的食用油',
+    '结块的旧盐罐',
+    '过期的酱油',
+    '过期的醋已经浑浊了',
+    '干掉的旧番茄酱',
+    '过期的辣椒酱',
+    '不再用的旧调料包',
+    '过期的沙拉油',
+    '结块的旧味精',
+    '过期的蚝油',
+    '变味的旧料酒',
+    '过期的芝麻酱',
+    '干透了的旧花生酱',
+    '不再用的旧蘸料包攒了一堆',
+    '过期的洗护用品',
+    '过期的化妆品',
+    '过期的护肤品小样',
+    '过期的眼药水',
+    '过期的隐形眼镜护理液',
+    '开封太久的防晒霜',
+    '变了味道的旧乳液',
+    '过期的面膜纸已经干透了',
+    '不再用的旧化妆刷',
+    '过期的洗发水',
+    '分层的旧沐浴露',
+    '过期的护发素',
+    '干掉的旧唇膏',
+    '过期的卸妆水',
+    '不再用的旧化妆棉',
+    '洗不干净的旧毛巾',
+    '发霉的旧浴球',
+    '发霉的搓澡巾',
+    '漏水的旧保温杯',
+    '过期的洗洁精',
+    '用完的空洗发水瓶',
+    '用完的各种空瓶子攒了一堆',
+    '变黄的老旧塑料浴帽',
+    '不再用的旧牙刷架',
+    '发霉的旧浴室地垫',
+    '堵塞的旧花洒头',
+    '漏水的旧水龙头',
+    '变色的旧肥皂盒',
+    '不再用的旧浴帘已经发霉',
+    '过期的旧牙膏',
+    '冰箱里冻了太久已经结霜的旧冰格',
+    '过期的牛奶',
+    '开封超过一周的豆腐',
+    '不再喝的旧茶包',
+    '过期的啤酒',
+    '冰箱里过期的果冻',
+    '放了很久的旧冰块已经串味',
+    '过期的椰汁',
+    '不再用的旧制冰盒',
+    '冰箱里过期的果酱瓶',
+    '过期的豆浆',
+    '开封太久的红酒已经不能喝了',
+    '不再用的旧保鲜盒盖子对不上',
+    '过期的冷萃咖啡液',
+    '冰箱里的旧冰袋已经漏水',
+    '过期的料酒瓶里只剩底',
+    '干掉的旧蚝油瓶口',
+    '过期的食用油已经浑浊',
+    '不再用的旧滤水器芯',
+    '过期的矿泉水',
+    '开封太久的沙拉酱',
+    '不再用的旧硅胶铲已经变形',
+    '过期的番茄酱',
+    '漏了底的旧酱油瓶',
+    '过期的花生油',
+    '不再用的旧油壶已经积了厚油垢',
+    '过期的陈醋',
+    '不再用的旧喷雾油瓶',
+    '过期的芝麻油',
+    '不再用的旧调料瓶已经看不清标签',
+    '酒店带回的一次性洗漱用品',
+    '过期的免洗洗手液',
+    '干掉的一次性酒精棉片',
+    '不再用的一次性桌布',
+    '攒了一堆没用的一次性手套',
+    '过期的旧湿巾已经干了',
+    '不再用的一次性餐具套装',
+    '过期的旧花露水',
+    '不再用的一次性保鲜膜只剩个空纸芯',
+    '过期的旧风油精',
   ],
   '土': [
-    '冰箱里的过期食品',
-    '攒着的空零食罐或外卖袋',
-    '手机通讯录里两年没联系的人'
-  ]
+    '有缺口的碗',
+    '裂了一条缝的盘子',
+    '缺了角的杯子',
+    '不再配套的旧碗碟',
+    '掉漆的旧搪瓷杯',
+    '磕破边的陶瓷碗',
+    '不再用的旧砂锅',
+    '裂了的旧汤碗',
+    '不再用的旧马克杯',
+    '缺了把手的旧杯子',
+    '磕碰严重的旧盘子',
+    '不再用的旧保鲜碗盖子碎了',
+    '裂了底的旧砂锅',
+    '不再用的旧碟子只有一个',
+    '缺了一块的旧陶瓷碗',
+    '破损的玻璃水杯',
+    '裂了的玻璃保鲜盒',
+    '不再用的旧玻璃花瓶',
+    '磕碰的旧玻璃杯',
+    '不再用的旧玻璃罐头瓶攒了一堆',
+    '裂纹的旧玻璃水壶',
+    '不再用的旧玻璃碗',
+    '碎了口的旧玻璃杯',
+    '不再用的旧玻璃收纳瓶',
+    '不再用的旧玻璃调味罐',
+    '不再用的旧玻璃杯垫',
+    '裂纹的旧玻璃杯已经不敢用了',
+    '不再用的旧玻璃花盆',
+    '不再用的旧玻璃烟灰缸',
+    '不再用的旧玻璃烛台',
+    '闲置已久的空花瓶',
+    '多余的旧鞋盒',
+    '不再用的旧收纳盒',
+    '各种乱七八糟的包装盒',
+    '不再用的旧置物架',
+    '闲置的旧塑料收纳箱',
+    '不再用的旧储物罐',
+    '多余的旧保鲜盒盖子对不上',
+    '不再用的旧密封罐',
+    '多余的旧洗衣篮',
+    '不再用的旧衣架收纳盒',
+    '闲置的旧抽屉分隔板',
+    '不再用的旧文件盒',
+    '多余的旧调料架',
+    '不再用的旧化妆品收纳盒',
+    '不再喜欢的旧摆件',
+    '不再用的旧相框',
+    '过时的旧装饰画',
+    '不再用的旧陶瓷摆件',
+    '不再用的旧风铃',
+    '不再喜欢的旧水晶球',
+    '过时的旧窗帘绑带',
+    '不再用的旧假花摆件',
+    '不再喜欢的旧桌面摆设',
+    '过时的旧墙上装饰品',
+    '不再用的旧招财摆件',
+    '不再喜欢的旧挂饰',
+    '过时的旧开关贴纸',
+    '不再用的旧纪念品杯子',
+    '不再喜欢的旧冰箱贴攒了一堆',
+    '过时的旧地毯',
+    '不再用的旧浴室地垫',
+    '卷了边的旧门垫',
+    '不再用的旧瑜伽垫',
+    '磨损的旧脚垫',
+    '不再用的旧桌面防烫垫',
+    '变硬的旧浴室防滑垫',
+    '不再用的旧键盘垫',
+    '卷边的旧桌垫',
+    '不再用的旧杯垫陶瓷款',
+    '脱线的旧地垫',
+    '不再用的旧门厅地垫',
+    '发霉的旧茶几垫',
+    '不再用的旧沙发垫',
+    '变色的旧地板革',
+    '闲置的旧花盆托盘',
+    '破裂的旧花盆',
+    '不再用的旧花瓶太大了也没花插',
+    '不再用的旧育苗盆',
+    '不再用的旧种植槽',
+    '裂了的旧陶土盆',
+    '不再用的旧水培花瓶',
+    '闲置的旧多肉盆',
+    '不再用的旧悬挂花盆',
+    '不再用的旧兰花盆',
+    '破了口的旧紫砂盆',
+    '不再用的旧塑料花盆',
+    '不再用的旧阳台花箱',
+    '闲置的旧喷壶',
+    '不再用的旧笔筒陶瓷款',
+    '不再用的旧桌面收纳盒',
+    '不再用的旧文件架',
+    '不再用的旧名片座',
+    '不再用的旧日历座陶瓷款',
+    '不再用的旧纸巾盒陶瓷款',
+    '不再用的旧相框桌面款',
+    '不再用的旧手机座陶瓷款',
+    '不再用的旧茶叶罐',
+    '不再用的旧调料瓶陶瓷款',
+    '不再用的旧陶土烟灰缸',
+  ],
 };
 
 // 年龄共情文案（每天根据日期动态选取，不同生日的人同一天看到的也不同）
@@ -1477,87 +1934,7 @@ function getJinjiWx(ji, todayGanZhi) {
   return ji[0] || '火';
 }
 
-// ============================================================
-// 天气获取（Open-Meteo + 地理编码）
-// ============================================================
-let weatherData = null;
-
-async function fetchWeather(cityName) {
-  if (!cityName || cityName.length < 2) return null;
-  try {
-    document.getElementById('weather-status').textContent = '🔍 正在获取天气…';
-    // 兼容性：AbortSignal.timeout 可能不被旧浏览器支持
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000);
-
-    const geoUrl = 'https://geocoding-api.open-meteo.com/v1/search?name=' + encodeURIComponent(cityName) + '&count=1&language=zh&format=json';
-    const geoRes = await fetch(geoUrl, { signal: controller.signal });
-    if (!geoRes.ok) {
-      clearTimeout(timeoutId);
-      document.getElementById('weather-status').textContent = '⚠ 城市查询失败，穿衣建议将使用通用版';
-      return null;
-    }
-    const geoData = await geoRes.json();
-    if (!geoData.results || geoData.results.length === 0) {
-      clearTimeout(timeoutId);
-      document.getElementById('weather-status').textContent = '⚠ 未找到该城市，穿衣建议将使用通用版';
-      return null;
-    }
-    const lat = geoData.results[0].latitude;
-    const lon = geoData.results[0].longitude;
-    const cityNameDisplay = geoData.results[0].name;
-    // 获取今天+明天的天气（forecast_days=2）
-    const weatherUrl = 'https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon + '&daily=temperature_2m_max,temperature_2m_min,weather_code&hourly=temperature_2m&current=temperature_2m,weather_code&timezone=auto&forecast_days=2';
-    const wRes = await fetch(weatherUrl, { signal: controller.signal });
-    clearTimeout(timeoutId);
-    if (!wRes.ok) {
-      document.getElementById('weather-status').textContent = '⚠ 天气数据获取失败，穿衣建议将使用通用版';
-      return null;
-    }
-    const wData = await wRes.json();
-
-    if (!wData.current || !wData.daily) {
-      document.getElementById('weather-status').textContent = '⚠ 天气数据格式异常，穿衣建议将使用通用版';
-      return null;
-    }
-
-    const result = {
-      maxTemp: Math.round(wData.daily.temperature_2m_max[0]),
-      minTemp: Math.round(wData.daily.temperature_2m_min[0]),
-      currentTemp: Math.round(wData.current.temperature_2m),
-      weatherCode: wData.current.weather_code,
-      cityDisplay: cityNameDisplay,
-      tomorrowMax: Math.round(wData.daily.temperature_2m_max[1]),
-      tomorrowMin: Math.round(wData.daily.temperature_2m_min[1]),
-      tomorrowCode: wData.daily.weather_code[1]
-    };
-
-    document.getElementById('weather-status').textContent = '✓ ' + cityNameDisplay + ' · 今日 ' + result.minTemp + '～' + result.maxTemp + '℃';
-    return result;
-  } catch (e) {
-    console.warn('[天气获取失败]', e.name, e.message);
-    document.getElementById('weather-status').textContent = '⚠ 天气获取失败，穿衣建议将使用通用版';
-    return null;
-  }
-}
-
-function weatherCodeToText(code) {
-  if (code === 0) return '晴天';
-  if (code <= 3) return '多云';
-  if (code <= 9) return '雾';
-  if (code <= 19) return '毛毛雨';
-  if (code <= 29) return '小雨';
-  if (code <= 39) return '雪';
-  if (code <= 49) return '雾';
-  if (code <= 59) return '毛毛雨';
-  if (code <= 69) return '雨';
-  if (code <= 79) return '雪';
-  if (code <= 84) return '阵雨';
-  if (code <= 94) return '雷阵雨';
-  return '强雷暴';
-}
-
-// 穿衣建议（基于温度区间，简洁合理）
+// 穿衣建议（基于喜用五行，通用版）
 // 五行对应颜色描述 + 英文键名
 const WX_COLOR_INFO = {
   '木': { label:'木色', colors:'绿色、青色、橄榄绿', main:'绿色系', hex:['#2d6a4f','#40916c','#52b788'] },
@@ -1686,304 +2063,250 @@ const ACCESSORIES = {
   }
 };
 
-function getClothingAdvice(xiList, weather, noCity, gender) {
-  const isMale = gender === 'male';
-
+function getClothingAdvice(xiList, gender) {
   // 颜色描述
   const colorDesc = xiList.map(w => WX_COLOR_INFO[w].main).join('和');
 
-  // 上装选项（含中性/运动/休闲风格，不重复）
-  const topOptions = {
-    '木': ['橄榄绿工装外套','青色牛仔夹克','深绿针织开衫','苔藓绿棒球服','牛油果绿卫衣','军绿冲锋衣'],
-    '火': ['橘色针织衫','暖橘色连帽卫衣','朱砂红棒球服','酒红毛衣','砖红工装外套','暖色系运动外套'],
-    '土': ['驼色风衣','奶茶色西装外套','卡其色工装外套','棕色皮衣','米色羊绒衫','大地色系运动外套'],
-    '金': ['白色衬衫','银灰色西装外套','米白色针织衫','浅灰连帽卫衣','珍珠白棒球服','银灰运动外套'],
-    '水': ['黑色西装外套','深蓝色牛仔夹克','藏青色毛呢大衣','深灰连帽卫衣','炭灰棒球服','黑色冲锋衣']
+  // 上装选项（通用色系+品类，不标注面料，不限制季节/性别/风格）
+  const TOP_OPTIONS = {
+    '木': ['绿色系衬衫/外套/T恤','橄榄绿卫衣/针织衫','青色系夹克衫/西装'],
+    '火': ['红色/暖橙色系衬衫/T恤','橘色/酒红系卫衣/针织衫','暖粉色系夹克衫/外套'],
+    '土': ['驼色/奶茶色系衬衫/T恤','卡其色系西装外套/夹克','棕色系卫衣/针织衫'],
+    '金': ['白色系衬衫/T恤','银灰色系西装外套/夹克','米白色系卫衣/针织衫'],
+    '水': ['黑色系夹克衫/西装/卫衣','深蓝色系衬衫/外套/T恤','藏青色系针织衫/开衫']
   };
-  // 上装：从所有喜用五行的上装池中，随机选1款
+  // 上装：从所有喜用五行的上装池中，随机选2款
   const allTops = [];
-  xiList.forEach(w => { const opts = topOptions[w] || topOptions['木']; allTops.push(...opts); });
-  const topRec = allTops[Math.floor(Math.random() * allTops.length)];
+  xiList.forEach(w => { const opts = TOP_OPTIONS[w] || TOP_OPTIONS['木']; allTops.push(...opts); });
+  const shuffledTops = [...allTops].sort(() => Math.random() - 0.5);
+  const topRecs = shuffledTops.slice(0, 2);
 
-  // 下装选项（使用专业词汇，含中性/运动/工装风格）
-  const bottomOptions = {
-    '木': ['深绿阔腿裤','牛仔蓝弯刀裤','橄榄绿工装裤/束脚裤','苔藓绿运动裤/慢跑裤'],
-    '火': ['深蓝吸烟裤','黑色西裤','深棕灯芯绒裤','酒红百褶裙/运动短裙'],
-    '土': ['卡其色阔腿裤','棕色西裤','奶茶色休闲裤/工装短裤','驼色直筒裤'],
-    '金': ['米白色直筒裤','浅灰运动裤/慢跑裤','白色牛仔裤','珍珠白休闲裤'],
-    '水': ['黑色西裤/运动裤','深蓝直筒裤/运动短裤','深灰毛呢裙','炭灰工装裤']
+  // 下装选项（覆盖休闲、商务、中性等多种风格，通用色系+品类）
+  const BOTTOM_OPTIONS = {
+    '木': ['直筒/阔腿/弯刀牛仔裤','绿色系休闲裤/工装裤'],
+    '火': ['直筒/阔腿/弯刀牛仔裤','暖色系休闲裤/半身裙'],
+    '土': ['直筒/阔腿/弯刀牛仔裤','大地色系休闲裤/西裤'],
+    '金': ['白色系裤装/半身裙','浅灰色系直筒裤/阔腿裤'],
+    '水': ['直筒/阔腿/弯刀牛仔裤','深色系休闲裤/西裤']
   };
-  // 下装：从所有喜用五行的下装池中，随机选1款
+  // 下装：从所有喜用五行的下装池中，随机选2款
   const allBottoms = [];
-  xiList.forEach(w => { const opts = bottomOptions[w] || bottomOptions['木']; allBottoms.push(...opts); });
-  let bottomRec = allBottoms[Math.floor(Math.random() * allBottoms.length)];
-  // 女性：50%概率推荐半裙代替下装
-  if (!isMale && Math.random() < 0.5) {
-    const skirtOpts = ['深蓝百褶裙','黑色A字裙','深灰直筒裙','奶茶色针织裙'];
-    bottomRec = skirtOpts[Math.floor(Math.random() * skirtOpts.length)];
-  }
+  xiList.forEach(w => { const opts = BOTTOM_OPTIONS[w] || BOTTOM_OPTIONS['木']; allBottoms.push(...opts); });
+  const shuffledBottoms = [...allBottoms].sort(() => Math.random() - 0.5);
+  const bottomRecs = shuffledBottoms.slice(0, 2);
 
-  // 连衣裙（仅女性，含多种风格）
-  const onePieceOptions = {
-    '木': ['橄榄绿/青色系连衣裙','牛油果绿碎花裙','深绿工装风连衣裙'],
-    '火': ['橘色/玫粉系连衣裙','酒红法式茶歇裙','暖橘色运动连衣裙'],
-    '土': ['驼色/奶茶色系连衣裙','卡其色工装风连衣裙','棕色针织连衣裙'],
-    '金': ['白色/银灰色系连衣裙','米白色运动连衣裙','珍珠白法式连衣裙'],
-    '水': ['黑色/深蓝色系连衣裙','深蓝碎花连衣裙','炭灰运动连衣裙']
+  // 连衣裙/套装推荐——拆分为连衣裙和套装两个独立词库
+  const ONEPIECE_DRESS = {
+    '木': ['绿色系连衣裙','橄榄绿系连衣裙','青色系连衣裙'],
+    '火': ['红色系连衣裙','暖橙色系连衣裙','橘粉色系连衣裙'],
+    '土': ['驼色系连衣裙','奶茶色系连衣裙','大地色系连衣裙'],
+    '金': ['白色系连衣裙','米白色系连衣裙','银灰色系连衣裙'],
+    '水': ['深蓝色系连衣裙','藏蓝色系连衣裙','黑色系连衣裙']
   };
-  // 连衣裙：仅女性，从所有喜用五行的连衣裙池中，随机选1款
-  let onePieceRec = null;
-  if (!isMale) {
-    const allOnePieces = [];
-    xiList.forEach(w => { const opts = onePieceOptions[w] || onePieceOptions['木']; allOnePieces.push(...opts); });
-    onePieceRec = allOnePieces[Math.floor(Math.random() * allOnePieces.length)];
-  }
+  const ONEPIECE_SUIT = {
+    '木': ['橄榄绿/青色系套装','森林绿系套装','墨绿色系套装'],
+    '火': ['暖色系套装','酒红色系套装','珊瑚粉色系套装'],
+    '土': ['大地色系套装','驼色/奶茶色系套装','卡其色系套装'],
+    '金': ['银色/白色系套装','金属感套装','浅灰/米白系套装'],
+    '水': ['深蓝色系套装','黑色系套装','藏蓝色系套装']
+  };
+  // 连衣裙：从喜用五行各取1条，去重
+  let dressRecs = [];
+  xiList.forEach(w => { const opts = ONEPIECE_DRESS[w] || ONEPIECE_DRESS['木']; dressRecs.push(opts[Math.floor(Math.random() * opts.length)]); });
+  dressRecs = [...new Set(dressRecs)];
+  if (dressRecs.length === 0) dressRecs.push(ONEPIECE_DRESS['木'][0]);
+  // 套装：从喜用五行各取1条，去重
+  let suitRecs = [];
+  xiList.forEach(w => { const opts = ONEPIECE_SUIT[w] || ONEPIECE_SUIT['木']; suitRecs.push(opts[Math.floor(Math.random() * opts.length)]); });
+  suitRecs = [...new Set(suitRecs)];
+  if (suitRecs.length === 0) suitRecs.push(ONEPIECE_SUIT['木'][0]);
 
-  // 鞋款数据库（按五行+颜色+性别分组，专业款式名称）
-  // 每个五行下分：中性款、女款、男款；每组3款
-  const SHOE_DB = {
-    '木': {
-      neutral: [
-        { color: '橄榄绿', style: '帆布板鞋' },
-        { color: '军绿', style: '工装靴' },
-        { color: '苔藓绿', style: '运动慢跑鞋' },
-        { color: '深绿', style: '低帮篮球鞋' },
-        { color: '草木绿', style: '休闲德训鞋' }
-      ],
-      female: [
-        { color: '薄荷绿', style: '厚底乐福鞋' },
-        { color: '豆绿', style: '玛丽珍平底鞋' },
-        { color: '橄榄绿', style: '切尔西短靴' },
-        { color: '苔藓绿', style: '系带牛津鞋' },
-        { color: '竹青', style: '低跟穆勒鞋' }
-      ],
-      male: [
-        { color: '深绿', style: '户外登山鞋' },
-        { color: '橄榄绿', style: '大头皮鞋' },
-        { color: '军绿', style: '休闲运动鞋' },
-        { color: '棕绿', style: '沙漠靴' },
-        { color: '卡其绿', style: '乐福鞋' }
-      ]
-    },
-    '火': {
-      neutral: [
-        { color: '砖红', style: '帆布高帮球鞋' },
-        { color: '暖橘', style: '运动慢跑鞋' },
-        { color: '酒红', style: '休闲德训鞋' },
-        { color: '橘棕', style: '工装靴' },
-        { color: '玫粉', style: '厚底老爹鞋' }
-      ],
-      female: [
-        { color: '玫瑰红', style: '细跟高跟鞋' },
-        { color: '砖红', style: '切尔西短靴' },
-        { color: '橘粉', style: '厚底乐福鞋' },
-        { color: '酒红', style: '玛丽珍粗跟鞋' },
-        { color: '暖橘', style: '系带凉鞋' }
-      ],
-      male: [
-        { color: '深棕', style: '布洛克皮鞋' },
-        { color: '红棕', style: '切尔西靴' },
-        { color: '砖红', style: '休闲皮鞋' },
-        { color: '暗橘', style: '复古运动鞋' },
-        { color: '酒红', style: '乐福鞋' }
-      ]
-    },
-    '土': {
-      neutral: [
-        { color: '驼色', style: '帆布板鞋' },
-        { color: '奶茶色', style: '运动休闲鞋' },
-        { color: '卡其', style: '工装靴' },
-        { color: '棕色', style: '休闲德训鞋' },
-        { color: '焦糖色', style: '厚底老爹鞋' }
-      ],
-      female: [
-        { color: '驼色', style: '切尔西短靴' },
-        { color: '奶茶色', style: '厚底乐福鞋' },
-        { color: '燕麦色', style: '圆头低跟单鞋' },
-        { color: '棕色', style: '玛丽珍平底鞋' },
-        { color: '沙棕', style: '系带牛津鞋' }
-      ],
-      male: [
-        { color: '棕色', style: '沙漠靴' },
-        { color: '驼色', style: '皮质乐福鞋' },
-        { color: '卡其', style: '户外徒步鞋' },
-        { color: '深棕', style: '手工缝线皮鞋' },
-        { color: '奶茶色', style: '休闲运动鞋' }
-      ]
-    },
-    '金': {
-      neutral: [
-        { color: '纯白', style: '小白鞋/板鞋' },
-        { color: '米白', style: '帆布德训鞋' },
-        { color: '银灰', style: '运动慢跑鞋' },
-        { color: '珍珠白', style: '厚底老爹鞋' },
-        { color: '浅灰', style: '休闲运动鞋' }
-      ],
-      female: [
-        { color: '纯白', style: '细跟尖头高跟鞋' },
-        { color: '珍珠白', style: '厚底乐福鞋' },
-        { color: '米白', style: '系带牛津鞋' },
-        { color: '银白', style: '玛丽珍粗跟鞋' },
-        { color: '浅灰', style: '低帮切尔西靴' }
-      ],
-      male: [
-        { color: '纯白', style: '休闲皮鞋' },
-        { color: '浅灰', style: '布洛克皮鞋' },
-        { color: '米白', style: '帆布高帮球鞋' },
-        { color: '银灰', style: '运动鞋' },
-        { color: '白色', style: '乐福鞋' }
-      ]
-    },
-    '水': {
-      neutral: [
-        { color: '纯黑', style: '帆布板鞋' },
-        { color: '深蓝', style: '运动慢跑鞋' },
-        { color: '炭灰', style: '工装靴' },
-        { color: '藏青', style: '休闲德训鞋' },
-        { color: '黑白拼色', style: '低帮篮球鞋' }
-      ],
-      female: [
-        { color: '纯黑', style: '切尔西踝靴' },
-        { color: '深蓝', style: '厚底乐福鞋' },
-        { color: '炭黑', style: '细跟尖头高跟鞋' },
-        { color: '藏青', style: '系带牛津鞋' },
-        { color: '黑色', style: '玛丽珍粗跟鞋' }
-      ],
-      male: [
-        { color: '纯黑', style: '切尔西靴' },
-        { color: '深蓝', style: '帆布高帮球鞋' },
-        { color: '炭灰', style: '布洛克皮鞋' },
-        { color: '墨黑', style: '运动鞋' },
-        { color: '藏青', style: '乐福鞋' }
-      ]
-    }
+  // 鞋款选项（以颜色为主的通用表述，不限定具体款式/性别/风格）
+  const SHOE_OPTIONS = {
+    '木': ['绿色系鞋款','白色系鞋款','基础深色系鞋款'],
+    '火': ['暖色系鞋款','白色系鞋款','基础深色系鞋款'],
+    '土': ['驼色/奶茶色系鞋款','米白色系鞋款','基础深色系鞋款'],
+    '金': ['米白色系鞋款','纯白色系鞋款','基础深色系鞋款'],
+    '水': ['纯黑色系鞋款','深蓝色系鞋款','基础深色系鞋款']
   };
-  // 鞋款：从所有喜用五行的鞋款池中，随机选2-3款
   const allShoes = [];
-  xiList.forEach(w => {
-    const db = SHOE_DB[w] || SHOE_DB['木'];
-    const neutralPool = db.neutral || [];
-    const genderedPool = isMale ? (db.male || []) : (db.female || []);
-    allShoes.push(...neutralPool, ...genderedPool);
-  });
-  const shuffledShoes = [...allShoes].sort(() => Math.random() - 0.5);
+  xiList.forEach(w => { const opts = SHOE_OPTIONS[w] || SHOE_OPTIONS['木']; allShoes.push(...opts); });
+  const shuffledShoes = [...new Set(allShoes)].sort(() => Math.random() - 0.5);
   const shoeRecs = shuffledShoes.slice(0, 3);
 
-  // 配饰：手链2款（不同品种）+ 耳饰1款，不显示desc
-  const allBracelets = [];
-  const allEarrings = [];
-  xiList.forEach(w => {
-    const db = ACCESSORIES[w] || ACCESSORIES['木'];
-    allBracelets.push(...db.bracelet);
-    allEarrings.push(...db.earring);
-  });
-  const shuffledB = [...allBracelets].sort(() => Math.random() - 0.5);
-  const selectedB = shuffledB.slice(0, 2);
-  const selectedE = allEarrings[Math.floor(Math.random() * allEarrings.length)];
-  const accRecs = [
-    { type: '手链', name: selectedB[0].name },
-    { type: '手链', name: selectedB[1].name },
-    { type: '耳饰', name: selectedE.name }
-  ];
+  // ==================== 配饰词库 ====================
 
-  // 天气描述（活人感）
-  let weatherHtml = '';
-  if (weather) {
-    const { maxTemp, minTemp, weatherCode } = weather;
-    const weatherText = weatherCodeToText(weatherCode);
-    const isRain = weatherCode >= 50 && weatherCode <= 99;
-    let humanHint = '';
-    if (minTemp <= -5) humanHint = '今天真的很冷，羽绒服围巾手套全副武装，保暖比什么都重要。';
-    else if (minTemp <= 5) humanHint = '厚外套加毛衣，出门记得把围巾也带上，脖子暖了全身都暖。';
-    else if (minTemp <= 12) humanHint = '今天温差比较大，早晚记得穿外套，中午一件长袖就好啦。';
-    else if (minTemp <= 18 && maxTemp <= 25) humanHint = '今天温度刚刚好，薄外套或长袖都合适，出门很舒服的一天。';
-    else if (minTemp <= 18 && maxTemp > 25) humanHint = '早晚有点凉，带件薄外套备用；中午会很热，短袖就够了。';
-    else if (minTemp <= 24) humanHint = '今天不冷不热，短袖或薄衬衫就够了，出门很轻松。';
-    else humanHint = '今天偏热，夏装出门，记得涂防晒，带瓶水。';
-    const rainHint = isRain ? '对了今天有雨，包里放把伞哦。' : '';
-    weatherHtml = '<div class="weather-tag">' + svgIcon('icon-leaf','#4a6fa8',14) + ' ' + weatherText + ' · ' + minTemp + '～' + maxTemp + '℃</div>' +
-      '<div style="margin-top:6px;font-size:13px;">' + humanHint + rainHint + '</div>';
-  } else {
-    const cityHint = noCity
-      ? '<div style="font-size:12px;color:var(--text-muted);margin-top:6px;">没有填写所在地，所以先给你一个通用建议～</div>'
-      : '';
-    weatherHtml = '<div>今天适合穿<strong>' + colorDesc + '</strong>的衣服。' + cityHint + '</div>';
-  }
-
-  // 搭配建议（基于五行特性，活人感表述）
-  const styleTips = {
-    '木': '今天适合有点"松弛感"的搭配，上松下紧或层叠穿法都很适合你。棉麻或亚麻材质会让整个人看起来更舒展。',
-    '火': '今天适合有点"亮"的搭配，暖色调上衣配简单下装，让注意力自然集中在你身上。真丝或轻薄材质会加分。',
-    '土': '今天适合"大地色系"的稳重搭配，同色系深浅叠穿特别显质感。羊绒或灯芯绒材质会让整个人看起来很"贵"。',
-    '金': '今天适合"干净利落"的搭配，白色或浅色上装配简洁下装，不需要多余装饰。缎面或丝光棉会让你看起来很精致。',
-    '水': '今天适合"安静有质感"的搭配，深色上装配浅色下装，简单但有细节。防风面料或深色丹宁会让整个人看起来很"定"。'
+  // 模块1：基础配件（非首饰类）—— 五行 × 品类款式
+  const BASE_ACC_CATEGORIES = {
+    '包袋类': { '金':['托特包','帆布包','斜挎包','链条包','邮差包','腋下包','双肩包','腰包','尼龙斜挎包','皮质托特包','金属链条包','信封包','手拿包','剑桥包','水桶包','购物袋','电脑包','化妆包','拉链包','迷你包'], '水':['托特包','帆布包','斜挎包','链条包','邮差包','腋下包','双肩包','腰包','尼龙斜挎包','皮质托特包','金属链条包','信封包','手拿包','剑桥包','水桶包','购物袋','电脑包','化妆包','拉链包','迷你包'], '木':['托特包','帆布包','斜挎包','邮差包','双肩包','腰包','尼龙斜挎包','信封包','剑桥包','水桶包','购物袋','电脑包','化妆包','编织包','草编包','棉麻包','帆布手提袋','束口包','挎包','旅行袋'], '火':['托特包','斜挎包','链条包','腋下包','双肩包','腰包','尼龙斜挎包','皮质托特包','金属链条包','信封包','手拿包','迷你包','亮面包','漆皮包','珠光包','丝绒包','蝴蝶结包','爱心包','毛绒包','链条晚宴包'], '土':['托特包','帆布包','斜挎包','邮差包','皮质托特包','信封包','剑桥包','水桶包','购物袋','电脑包','编织包','皮质手提包','翻盖包','马鞍包','托特手提包','棉麻斜挎包','复古邮差包','大容量托特包','棕色链条包','奶茶色腋下包'] },
+    '帽子类': { '金':['棒球帽','鸭舌帽','渔夫帽','针织冷帽','贝雷帽','报童帽','平檐帽','弯檐帽','羊毛冷帽','金属装饰帽','空顶帽','渔夫草帽','八角帽','画家帽','礼帽','爵士帽','平顶硬草帽','花呢帽','皮革鸭舌帽','灯芯绒棒球帽'], '水':['棒球帽','鸭舌帽','渔夫帽','针织冷帽','贝雷帽','报童帽','平檐帽','弯檐帽','羊毛冷帽','渔夫草帽','八角帽','画家帽','礼帽','花呢帽','灯芯绒棒球帽','深色冷帽','黑色渔夫帽','藏蓝棒球帽','灰色针织帽','黑色弯檐帽'], '木':['棒球帽','鸭舌帽','渔夫帽','贝雷帽','报童帽','平檐帽','弯檐帽','渔夫草帽','八角帽','画家帽','花呢帽','草编帽','麻质贝雷帽','棉麻渔夫帽','帆布棒球帽','绿色渔夫帽','青色棒球帽','草编平檐帽','画家帽','藤编渔夫帽'], '火':['棒球帽','鸭舌帽','渔夫帽','针织冷帽','贝雷帽','报童帽','平檐帽','弯檐帽','羊毛冷帽','金属装饰帽','亮面棒球帽','红色渔夫帽','粉色针织帽','暖色贝雷帽','橘色弯檐帽','酒红八角帽','毛绒冷帽','丝绒贝雷帽','亮片棒球帽','蝴蝶结鸭舌帽'], '土':['棒球帽','鸭舌帽','渔夫帽','贝雷帽','报童帽','平檐帽','弯檐帽','羊毛冷帽','渔夫草帽','八角帽','画家帽','礼帽','花呢帽','皮革鸭舌帽','灯芯绒棒球帽','驼色渔夫帽','棕色贝雷帽','卡其平檐帽','奶茶色针织帽','黄色八角帽'] },
+    '腰带类': { '金':['帆布腰带','皮质腰带','编织腰带','机能风腰带','简约皮带','工装腰带','金属扣腰带','链式腰带','双环腰带','细皮带','宽腰封','自动扣皮带','编织腰带','金属铭牌腰带','哑光皮质腰带','金属链条腰带','方扣皮带','织带腰带','尼龙腰带','皮革编织腰带'], '水':['帆布腰带','皮质腰带','编织腰带','简约皮带','工装腰带','金属扣腰带','双环腰带','细皮带','自动扣皮带','哑光皮质腰带','深色皮质腰带','黑色编织腰带','暗色系皮带','皮质编织腰带','尼龙腰带','藏蓝腰带','黑色金属扣腰带','暗纹皮质腰带','石墨色细腰带','深灰工装腰带'], '木':['帆布腰带','编织腰带','机能风腰带','工装腰带','编织腰带','织带腰带','尼龙腰带','棉麻腰带','草编腰带','布艺腰带','绿色编织腰带','棕色帆布腰带','自然色系腰带','藤编腰带','麻绳腰带','帆布工装腰带','民族风编织腰带','棉质腰带','彩色编织腰带','手编腰带'], '火':['皮质腰带','机能风腰带','简约皮带','金属扣腰带','链式腰带','金属链条腰带','红色皮质腰带','亮面皮带','细皮带','宽腰封','金属铭牌腰带','漆皮腰带','暖色编织腰带','橘色皮质腰带','粉色细皮带、酒红金属扣腰带','亮片腰带','丝绒腰带','链条腰封','爱心扣腰带','红色工装腰带'], '土':['皮质腰带','编织腰带','简约皮带','金属扣腰带','双环腰带','方扣皮带','织带腰带','哑光皮质腰带','皮革编织腰带','棕色皮质腰带','驼色简约皮带','卡其编织腰带','奶茶色皮带、复古皮带、大地色系腰带、马鞍皮带、做旧皮质腰带、皮质宽腰带、古铜扣皮带、棕色工装腰带、黄色编织腰带'] },
+    '其他配件': { '金':['针织围巾','羊毛围巾','运动发带','中筒袜','黑框眼镜','金属框眼镜','皮革手套','棉麻手套','金属挂饰','帆布手套','丝巾','领带','胸针','袖扣','领带夹','手表','针织冷帽','皮手套','墨镜','金属名片夹'], '水':['针织围巾','羊毛围巾','运动发带','中筒袜','黑框眼镜','金属框眼镜','皮革手套','丝巾','领带','胸针','袖扣','领带夹','手表','皮手套','墨镜','黑色围巾','藏蓝中筒袜','深色针织围巾','灰色皮手套','暗色系墨镜、黑色棉麻手套'], '木':['针织围巾','羊毛围巾','运动发带','中筒袜','棉麻手套','帆布手套','针织冷帽','绿色中筒袜、棉质围巾、布艺发带、植物染围巾、亚麻围巾、草编挂饰、布艺胸针、棉质发带、帆布眼镜链、棉麻口袋巾、植物印花丝巾、绿色针织围巾、彩色运动发带、编织手环、棉质手套'], '火':['针织围巾','羊毛围巾','运动发带','中筒袜','金属框眼镜','丝巾','领带','胸针','手表','墨镜、红色针织围巾、暖色丝巾、亮片发带、橘色中筒袜、粉色围巾、酒红领带、暖色胸针、亮色墨镜、毛绒手套、爱心胸针、甜酷发带、彩色运动发带'], '土':['针织围巾','羊毛围巾','运动发带','中筒袜','黑框眼镜','皮革手套','棉麻手套','丝巾','领带','胸针','袖扣','领带夹','手表','皮手套','墨镜、驼色针织围巾、棕色皮手套、奶茶色中筒袜、卡其棉麻手套、大地色丝巾、棕色领带、复古胸针、皮质手表、皮革墨镜、驼色运动发带、黄色中筒袜'] }
   };
-  const styleTip = xiList.map(w => styleTips[w]).join('；');
+  // 五行对应的颜色标签
+  const BASE_ACC_COLOR = {
+    '金': ['黑','藏蓝','深灰','米白','银','白色','金色','金属色','浅灰','象牙白'],
+    '水': ['黑','藏蓝','深灰','米白','银','深蓝','暗灰','石墨色','午夜蓝','炭灰'],
+    '木': ['绿','青','浅卡其','墨绿','草绿','橄榄绿','森绿','薄荷绿','翠绿','苔绿'],
+    '火': ['红','粉','橙','酒红','珊瑚红','暖粉','橘色','玫红','桃粉','暖橘'],
+    '土': ['棕','卡其','驼色','黄','奶茶色','咖色','米黄','琥珀色','大地色','焦糖色']
+  };
 
-  // 材质建议（从WX_MATERIALS取，每个喜用五行推荐一种材质）
-  const materialSuggestions = xiList.map(w => {
-    const mats = WX_MATERIALS[w] || ['棉质'];
-    return mats[Math.floor(Math.random() * mats.length)];
+  // 模块3：首饰配饰（非水晶/非手串，按颜色分类，确保色系与示例匹配）
+  const JEWELRY_ACC = {
+    '金': {
+      '银色': ['银色耳圈','银色耳钉','银色细圈手链','银色锁骨链','银色项链','银色耳夹','银色吊坠','银色耳骨夹'],
+      '白色': ['白色珍珠耳钉','白色珍珠项链','白色极简戒指','白色系手链','白色珐琅胸针'],
+      '金色': ['金色耳圈','金色耳钉','金色手链','金色锁骨链','金色项链','金色发夹'],
+      '金属色': ['金属耳圈','金属耳钉','金属手链','金属锁骨链','金属项链','金属胸针','金属发夹']
+    },
+    '水': {
+      '黑色': ['黑色耳钉','黑色手链','黑色项链','黑色耳圈','黑色细圈手链','黑色极简耳夹','黑色发夹'],
+      '藏蓝色': ['藏蓝色耳钉','藏蓝色手链','藏蓝色项链','藏蓝色耳圈','藏蓝色胸针'],
+      '深灰色': ['深灰色耳钉','深灰色手链','深灰色项链','深灰色戒指','深灰色胸针'],
+      '深蓝': ['深蓝耳钉','深蓝细圈手链','深蓝吊坠','深蓝耳夹','深蓝发夹'],
+      '暗灰': ['暗灰耳钉','暗灰手链','暗灰锁骨链','暗灰戒指']
+    },
+    '木': {
+      '绿色': ['绿色珐琅耳钉','绿色细圈手链','绿色亚克力耳饰','绿色极简戒指','绿色发夹','绿色手链'],
+      '青色': ['青色珐琅吊坠','青色简约胸针','青色耳线','青色细圈手链'],
+      '墨绿': ['墨绿锁骨链','墨绿极简吊坠','墨绿耳钉','墨绿戒指'],
+      '草绿': ['草绿发夹','草绿耳饰','草绿手链','草绿胸针']
+    },
+    '火': {
+      '红色': ['红色珐琅耳钉','红色耳圈','红色细圈手链','红色锁骨链','红色极简吊坠','红色手镯'],
+      '粉色': ['粉色锁骨链','粉色耳钉','粉色极简戒指','粉色手链','粉色胸针'],
+      '橙色': ['橙色胸针','橙色吊坠','橙色耳钉','橙色发夹','橙色手链'],
+      '暖粉': ['暖粉色耳线','暖粉色耳夹','暖粉色细圈项链','暖粉色手链'],
+      '珊瑚红': ['珊瑚红耳钉','珊瑚红手链','珊瑚红项链','珊瑚红胸针']
+    },
+    '土': {
+      '棕色': ['棕色珐琅耳钉','棕色细圈手链','棕色发夹','棕色极简吊坠','棕色布艺胸针','棕色手链'],
+      '咖色': ['咖色耳钉','咖色简约手链','咖色锁骨链','咖色极简耳夹','咖色戒指'],
+      '米黄': ['米黄色胸针','米黄色耳钉','米黄色手链','米黄色项链'],
+      '琥珀色': ['琥珀色耳钉','琥珀色手链','琥珀色戒指','琥珀色耳圈'],
+      '奶茶色': ['奶茶色锁骨链','奶茶色细链项链','奶茶色耳骨夹','奶茶色手链','奶茶色胸针'],
+      '大地色': ['大地色耳线','大地色系耳饰','大地色手链','大地色胸针']
+    }
+  };
+
+  // ---- 模块1 生成：基础配件 ----
+  const baseAccResult = [];
+  const categories = Object.keys(BASE_ACC_CATEGORIES);
+  const shuffledCats = [...categories].sort(() => Math.random() - 0.5);
+  const pickedCats = shuffledCats.slice(0, 3); // 随机选3个品类
+  pickedCats.forEach(cat => {
+    const colorPool = [];
+    xiList.forEach(w => { (BASE_ACC_COLOR[w] || BASE_ACC_COLOR['木']).forEach(c => colorPool.push(c)); });
+    const uniqueColors = [...new Set(colorPool)];
+    const pickedColor = uniqueColors[Math.floor(Math.random() * uniqueColors.length)];
+    const itemPool = [];
+    xiList.forEach(w => { (BASE_ACC_CATEGORIES[cat][w] || BASE_ACC_CATEGORIES[cat]['木']).forEach(it => itemPool.push(it)); });
+    const uniqueItems = [...new Set(itemPool)].sort(() => Math.random() - 0.5);
+    const pickedItems = uniqueItems.slice(0, 3);
+    baseAccResult.push('○ ' + pickedColor + '色系' + cat + '（' + pickedItems.join('/') + '等）');
   });
 
-  // 组装输出（精简版，去五行术语，去整体风格段）
-  let outfitHtml = '';
+  // ---- 模块2 生成：水晶/宝石配饰（仅手串/手饰）----
+  const CRYSTAL_BRACELET = {
+    '金': { name:'金系宝石手串', examples:['白水晶手串','月光石手串','银曜石手串','金属感水晶手串','灰月光手串','钛晶手串'], desc:'提亮肤色，适配中性风穿搭' },
+    '水': { name:'水系宝石手串', examples:['海蓝宝手串','蓝玉髓手串','黑曜石手串','深蓝水晶手串','蓝纹玛瑙手串','青金石手串'], desc:'清透显白，适配冷调穿搭' },
+    '木': { name:'木系宝石手串', examples:['绿幽灵手串','绿发晶手串','孔雀石手串','橄榄石手串','葡萄石手串','翡翠手串'], desc:'清新自然，适配森系/文艺穿搭' },
+    '火': { name:'火系宝石手串', examples:['粉晶手串','石榴石手串','红纹石手串','樱花玛瑙手串','冰粉晶手串','紫水晶手串'], desc:'温柔显气色，适配暖调穿搭' },
+    '土': { name:'土系宝石手串', examples:['蜜蜡手串','琥珀手串','黄水晶手串','虎眼石手串','金发晶手串','沙漠玫瑰手串'], desc:'温润沉稳，适配大地色/复古穿搭' }
+  };
+  const crystalResult = [];
+  xiList.forEach(w => {
+    const crystal = CRYSTAL_BRACELET[w] || CRYSTAL_BRACELET['木'];
+    const ex = [...crystal.examples].sort(() => Math.random() - 0.5).slice(0, 3).join('/');
+    crystalResult.push('○ ' + crystal.name + '（' + ex + '等）——' + crystal.desc);
+  });
+  // 去重（按name）
+  const crystalNames = new Set();
+  const crystalFinal = [];
+  crystalResult.forEach(r => { const n = r.split('（')[0].replace('○ ',''); if (!crystalNames.has(n)) { crystalNames.add(n); crystalFinal.push(r); } });
+
+  // ---- 模块3 生成：首饰配饰（非水晶，金属日常款，按颜色分类）----
+  const jewelryResult = [];
+  xiList.forEach(w => {
+    const jdb = JEWELRY_ACC[w] || JEWELRY_ACC['木'];
+    const colors = Object.keys(jdb);
+    const pickedColor = colors[Math.floor(Math.random() * colors.length)];
+    const items = jdb[pickedColor];
+    const pickedItems = [...items].sort(() => Math.random() - 0.5).slice(0, 3);
+    jewelryResult.push('○ ' + pickedColor + '系首饰（' + pickedItems.join('/') + '）');
+  });
+  // 去重
+  const jewelryFinal = [...new Set(jewelryResult)];
+
+  // 组装输出——穿搭基础（上装+下装+鞋款打包）
+  let basicOutfitHtml = '';
 
   // 上装
-  outfitHtml += '<div style="margin:8px 0;">' +
+  basicOutfitHtml += '<div style="margin:8px 0;">' +
     '<div style="font-weight:700;font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">' +
-    '<span style="font-size:11px;color:var(--accent);">👕</span>上装推荐' +
-    '</div>' +
-    '<div style="font-size:13px;line-height:1.8;color:var(--text-primary);">' + topRec + '</div>' +
-    '<div style="font-size:11px;color:var(--text-muted);margin-top:3px;">面料：' + materialSuggestions[0] + '</div>' +
-    '</div>';
+    '<span style="font-size:11px;color:var(--accent);">👕</span>上装推荐</div>' +
+    '<div style="font-size:13px;line-height:1.9;color:var(--text-primary);">' +
+    topRecs.map(t => '<div>○ ' + t + '</div>').join('') +
+    '</div></div>';
 
   // 下装
-  outfitHtml += '<div style="margin:8px 0;">' +
+  basicOutfitHtml += '<div style="margin:8px 0;">' +
     '<div style="font-weight:700;font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">' +
-    '<span style="font-size:11px;color:var(--accent);">👖</span>下装推荐' +
-    '</div>' +
-    '<div style="font-size:13px;line-height:1.8;color:var(--text-primary);">' + bottomRec + '</div>' +
-    '</div>';
-
-  // 连衣裙（仅女性）
-  if (!isMale && onePieceRec) {
-    outfitHtml += '<div style="margin:8px 0;">' +
-      '<div style="font-weight:700;font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">' +
-      '<span style="font-size:11px;color:var(--accent);">👗</span>或换连衣裙' +
-      '</div>' +
-      '<div style="font-size:13px;line-height:1.8;color:var(--text-primary);">' + onePieceRec + '</div>' +
-      '</div>';
-  }
-
-  // 鞋款：每行1款，前加○
-  outfitHtml += '<div style="margin:8px 0;">' +
-    '<div style="font-weight:700;font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">' +
-    '<span style="font-size:11px;color:var(--accent);">👟</span>鞋款推荐' +
-    '</div>' +
-    shoeRecs.map(s =>
-      '<div style="font-size:13px;line-height:1.9;color:var(--text-primary);">○ ' + s.color + '·' + s.style + '</div>'
-    ).join('') +
-    '</div>';
-
-  // 配饰：手链+耳饰，品种+色系描述
-  outfitHtml += '<div style="margin:8px 0;">' +
-    '<div style="font-weight:700;font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">' +
-    '<span style="font-size:11px;color:var(--accent);">💍</span>配饰推荐' +
-    '</div>' +
+    '<span style="font-size:11px;color:var(--accent);">👖</span>下装推荐</div>' +
     '<div style="font-size:13px;line-height:1.9;color:var(--text-primary);">' +
-    accRecs.map(a =>
-      '<div style="margin-bottom:4px;"><span style="color:var(--text-muted);font-size:11px;">' + a.type + ' · </span><strong>' + a.name + '</strong></div>'
-    ).join('') +
-    '</div>' +
-    '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">没有也没关系，素颜的你同样好看～</div>' +
-    '</div>';
+    bottomRecs.map(b => '<div>○ ' + b + '</div>').join('') +
+    '</div></div>';
+
+  // 鞋款推荐
+  basicOutfitHtml += '<div style="margin:8px 0;">' +
+    '<div style="font-weight:700;font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">' +
+    '<span style="font-size:11px;color:var(--accent);">👟</span>鞋款推荐</div>' +
+    '<div style="font-size:13px;line-height:1.9;color:var(--text-primary);">' +
+    shoeRecs.map(s => '<div>○ ' + s + '</div>').join('') +
+    '</div></div>';
+
+  // 连衣裙/套装推荐（模块1）
+  let dressHtml = '<div style="margin:8px 0;">' +
+    '<div style="font-weight:700;font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">' +
+    '<span style="font-size:11px;color:var(--accent);">👗</span>连衣裙/套装推荐</div>' +
+    '<div style="font-size:13px;line-height:1.9;color:var(--text-primary);">' +
+    '<div>○ ' + dressRecs[0] + '</div>' +
+    '<div>○ ' + suitRecs[0] + '</div>' +
+    '</div></div>';
+
+  // 基础配件推荐（模块2）——每行一个品类
+  let baseAccHtml = '<div style="margin:8px 0;">' +
+    '<div style="font-weight:700;font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">' +
+    '<span style="font-size:11px;color:var(--accent);">🎒</span>基础配件推荐</div>' +
+    '<div style="font-size:13px;line-height:1.9;color:var(--text-primary);">' +
+    baseAccResult.map(item => '<div>' + item + '</div>').join('') +
+    '</div></div>';
+
+  // 水晶/宝石配饰（模块3）
+  let crystalHtml = '<div style="margin:8px 0;">' +
+    '<div style="font-weight:700;font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">' +
+    '<span style="font-size:11px;color:var(--accent);">💎</span>水晶/宝石配饰</div>' +
+    '<div style="font-size:13px;line-height:1.9;color:var(--text-primary);">' +
+    crystalFinal.map(c => '<div>' + c + '</div>').join('') +
+    '</div></div>';
+
+  // 首饰配饰推荐（模块4）
+  let jewelryHtml = '<div style="margin:8px 0;">' +
+    '<div style="font-weight:700;font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">' +
+    '<span style="font-size:11px;color:var(--accent);">💍</span>首饰配饰推荐</div>' +
+    '<div style="font-size:13px;line-height:1.9;color:var(--text-primary);">' +
+    jewelryFinal.map(j => '<div>' + j + '</div>').join('') +
+    '</div></div>' +
+    '<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">不佩戴配饰也没关系，简约利落的你，一样自带高光气场✨</div>';
 
   return {
-    weatherTag: weather ? weatherCodeToText(weather.weatherCode) + ' · ' + weather.minTemp + '～' + weather.maxTemp + '℃' : null,
     text: '<div>今天适合穿<strong>' + colorDesc + '</strong>系的衣服出门。</div>' +
-      (weather ? '<div style="margin:8px 0;">' + weatherHtml + '</div>' : '') +
-      '<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">' + outfitHtml + '</div>'
+      '<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">' + basicOutfitHtml + '</div>',
+    dress: dressHtml,
+    baseAcc: baseAccHtml,
+    crystal: crystalHtml,
+    jewelry: jewelryHtml
   };
 }
 
@@ -2368,9 +2691,7 @@ function showToast(msg) {
 function resetForm() {
   document.getElementById('result-section').style.display='none';
   document.getElementById('form-card').style.display='block';
-  document.getElementById('weather-status').textContent='';
   document.getElementById('result-tabs').style.display='none';
-  weatherData = null;
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -2379,17 +2700,6 @@ function switchResultDay(day) {
   document.getElementById('result-tomorrow').style.display = day === 'tomorrow' ? 'block' : 'none';
   document.getElementById('tab-today').classList.toggle('active', day === 'today');
   document.getElementById('tab-tomorrow').classList.toggle('active', day === 'tomorrow');
-}
-
-let cityFetchTimer = null;
-function onCityInput() {
-  const city = document.getElementById('current-place').value.trim();
-  clearTimeout(cityFetchTimer);
-  if (city.length >= 2) {
-    cityFetchTimer = setTimeout(() => {
-      fetchWeather(city).then(d => { weatherData = d; });
-    }, 800);
-  }
 }
 
 function initSelects() {
@@ -2415,16 +2725,11 @@ async function calculate() {
   const month = parseInt(document.getElementById('birth-month').value);
   const day = parseInt(document.getElementById('birth-day').value);
   const hour = parseInt(document.getElementById('birth-hour').value);
-  const currentPlace = document.getElementById('current-place').value || '';
   const gender = document.getElementById('gender').value;
 
   if (!year||!month||!day) { showToast('请填写完整的出生年月日'); return; }
 
-  showLoading('正在排八字，获取今日天气…');
-
-  if (!weatherData && currentPlace.length >= 2) {
-    weatherData = await fetchWeather(currentPlace);
-  }
+  showLoading('正在排八字…');
 
   setTimeout(() => {
     try {
@@ -2442,19 +2747,20 @@ async function calculate() {
       const foodArr = WX_FOODS[primaryXi] || WX_FOODS['木'];
       const foodRec = foodArr[Math.floor(Math.random()*foodArr.length)];
       const foodRec2 = foodArr[(Math.floor(Math.random()*foodArr.length)+1)%foodArr.length];
-      const clothing = getClothingAdvice(xiyong.xi, weatherData, !currentPlace, gender);
+      const clothing = getClothingAdvice(xiyong.xi, gender);
       const dramaList = DRAMA_DB[emotionState] || DRAMA_DB['平稳'];
       const drama = dramaList[Math.floor(Math.random()*dramaList.length)];
       const musicList = MUSIC_DB[primaryXi] || MUSIC_DB['木'];
       const music = musicList[Math.floor(Math.random()*musicList.length)];
-      const dsList = DONGSHELJ_DB[jinjiWx] || DONGSHELJ_DB['火'];
+      const dsArr = DONGSHELJ_DB[jinjiWx] || DONGSHELJ_DB['火'];
+      const dsList = [...dsArr].sort(() => Math.random()-0.5).slice(0,3);
       const ageEmpathy = getAgeEmpathy(year, month, day, gender);
 
       renderResult({
         bazi, wxCount, xiyong, today, todayGanZhi,
         primaryXi, jinjiWx, vibeKey, vibeText, emotionState,
         foodRec, foodRec2, clothing, drama, music, dsList, ageEmpathy,
-        currentPlace, year, month, day, gender
+        year, month, day, gender
       });
 
       hideLoading();
@@ -2472,7 +2778,7 @@ async function calculate() {
 function renderResult(data) {
   const { bazi, wxCount, xiyong, today, todayGanZhi, primaryXi, jinjiWx,
     vibeKey, vibeText, emotionState, foodRec, foodRec2, clothing, drama, music,
-    dsList, ageEmpathy, currentPlace, year, month, day, gender } = data;
+    dsList, ageEmpathy, year, month, day, gender } = data;
 
   // Header — 包含命格标签
   const geTagHtml = xiyong.geType !== 'shenqiang' && xiyong.geType !== 'shenruo'
@@ -2482,9 +2788,7 @@ function renderResult(data) {
     `日主${bazi[2].gan}（${GAN_WX[GAN.indexOf(bazi[2].gan)]}）· 喜${xiyong.xi.join('、')}${geTagHtml}`;
   document.getElementById('result-bazi-str').textContent = bazi.map(c=>c.gan+c.zhi).join(' ');
   document.getElementById('result-today-str').textContent =
-    `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日` +
-    (currentPlace ? ` · ${currentPlace}` : '') +
-    (weatherData ? ` · ${weatherData.minTemp}～${weatherData.maxTemp}℃` : '');
+    `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`;
 
   // 年龄共情
   document.getElementById('age-empathy').innerHTML = ageEmpathy;
@@ -2509,15 +2813,38 @@ function renderResult(data) {
     <div class="today-vibe-title">✦ TODAY'S ENERGY · ${vibeKey}</div>
     <div class="today-vibe-text">${vibeEmojis[vibeKey]||'○'}  ${vibeText}</div>`;
 
-  // 穿衣模块（占据整行）
-  const clothingHtml = `
+  // 穿衣模块（穿搭基础——上装+下装+鞋款）
+  const clothingBasicHtml = `
     <div class="module-card full-width">
       <div class="module-icon">${svgIcon('icon-clothes','#1a1a1a',28)}</div>
       <div class="module-title">今日穿搭建议</div>
       <div class="module-content">
-        ${clothing.weatherTag ? `<div class="weather-tag">${svgIcon('icon-leaf','#4a6fa8',14)} ${clothing.weatherTag}</div>` : ''}
         ${clothing.text}
       </div>
+    </div>`;
+
+  // 连衣裙/套装模块（模块1）
+  const dressModuleHtml = `
+    <div class="module-card">
+      <div class="module-content">${clothing.dress}</div>
+    </div>`;
+
+  // 基础配件模块（模块2）
+  const baseAccModuleHtml = `
+    <div class="module-card">
+      <div class="module-content">${clothing.baseAcc}</div>
+    </div>`;
+
+  // 水晶/宝石配饰模块（模块3）
+  const crystalModuleHtml = `
+    <div class="module-card">
+      <div class="module-content">${clothing.crystal}</div>
+    </div>`;
+
+  // 首饰配饰模块（模块4）
+  const jewelryModuleHtml = `
+    <div class="module-card">
+      <div class="module-content">${clothing.jewelry}</div>
     </div>`;
 
   // 饮食模块
@@ -2555,39 +2882,49 @@ function renderResult(data) {
       </div>
     </div>`;
 
-  document.getElementById('modules-grid').innerHTML =
-    '<div class="modules-left">' + clothingHtml + '</div>' +
-    '<div class="modules-right">' + foodHtml + dramaHtml + musicHtml + '</div>';
-
-  // 今日能量碎片——从事件库随机选4条
+  // 小小治愈事件 —— 在网格渲染前先准备好数据
   const events = ENERGY_EVENTS[primaryXi] || ENERGY_EVENTS['木'];
   const shuffled = [...events].sort(() => Math.random() - 0.5);
   const picked = shuffled.slice(0, 4);
-  document.getElementById('energy-card').innerHTML = `
-    <div class="card-title">✦ 可以去做的小小治愈事件</div>
-    <div class="energy-strip">
-      ${picked.map((ev, i) => `<div class="energy-item">${svgIcon(ENERGY_ICONS[i % ENERGY_ICONS.length],'#5a5a5a',18)} ${ev}</div>`).join('')}
+  const energyHtml = `
+    <div class="module-card">
+      <div class="card-title">✦ 可以去做的小小治愈事件</div>
+      <div class="energy-strip">
+        ${picked.map((ev, i) => `<div class="energy-item">${svgIcon(ENERGY_ICONS[i % ENERGY_ICONS.length],'#5a5a5a',18)} ${ev}</div>`).join('')}
+      </div>
     </div>`;
 
-  // 断舍离
-  document.getElementById('dongshelj-card').innerHTML = `
-    <div class="card-title">✦ 今日断舍离</div>
-    <div class="card-subtitle">今天适合清理这些小东西哦～</div>
-    <ul class="dongshelj-list">
-      ${dsList.map(item => `<li><span class="dongshelj-icon">${svgIcon('icon-broom','#3b7dd8',16)}</span>${item}</li>`).join('')}
-    </ul>`;
+  document.getElementById('modules-grid').innerHTML =
+    '<div class="modules-left">' +
+      clothingBasicHtml +
+      dressModuleHtml +
+      baseAccModuleHtml +
+      crystalModuleHtml +
+      jewelryModuleHtml +
+    '</div>' +
+    '<div class="modules-right">' + foodHtml + dramaHtml + musicHtml +
+      '<div class="module-card">' +
+        '<div class="module-content" style="text-align:center;">' +
+          '<div style="font-weight:700;font-size:13px;margin-bottom:6px;">✦ 今日断舍离</div>' +
+          '<div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">今天适合清理这些小东西哦～</div>' +
+          '<ul class="dongshelj-list" style="display:inline-block;text-align:left;">' +
+            dsList.map(item => `<li><span class="dongshelj-icon">${svgIcon('icon-broom','#3b7dd8',16)}</span>${item}</li>`).join('') +
+          '</ul>' +
+        '</div>' +
+      '</div>' +
+      energyHtml +
+    '</div>';
 
-  // 时辰身心状态模块
   renderShichenCard(primaryXi, 'shichen-card');
 
   // ===== 明日运势预览 =====
-  renderTomorrow(bazi, xiyong, weatherData, gender, year, month, day);
+  renderTomorrow(bazi, xiyong, gender, year, month, day);
 }
 
 // ============================================================
 // 明日运势渲染
 // ============================================================
-function renderTomorrow(bazi, xiyong, weatherData, gender, birthYear, birthMonth, birthDay) {
+function renderTomorrow(bazi, xiyong, gender, birthYear, birthMonth, birthDay) {
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   const tomorrowGanZhi = getDayGanZhi(tomorrow.getFullYear(), tomorrow.getMonth()+1, tomorrow.getDate());
@@ -2605,16 +2942,12 @@ function renderTomorrow(bazi, xiyong, weatherData, gender, birthYear, birthMonth
   else if (score >= 1) vibeKey = '顺';
 
   const vibeTexts = VIBE_TEXT[vibeKey] || VIBE_TEXT['平'];
-  const vibeText = vibeTexts[0];
+  const vibeText = vibeTexts[Math.floor(Math.random()*vibeTexts.length)];
   const tomorrowEmotion = getEmotionState(tomorrowGanZhi, xiyong);
   const tomorrowJinji = getJinjiWx(xiyong.ji, tomorrowGanZhi);
 
   // 明天穿搭
-  const hasTomorrowWeather = weatherData && weatherData.tomorrowMax !== undefined;
-  const tomorrowWeather = hasTomorrowWeather ? {
-    maxTemp: weatherData.tomorrowMax, minTemp: weatherData.tomorrowMin, weatherCode: weatherData.tomorrowCode
-  } : null;
-  const tomorrowClothing = getClothingAdvice(xiyong.xi, tomorrowWeather, !weatherData, gender);
+  const tomorrowClothing = getClothingAdvice(xiyong.xi, gender);
 
   // 明天饮食
   const foodArr = WX_FOODS[primaryXi] || WX_FOODS['木'];
@@ -2631,21 +2964,98 @@ function renderTomorrow(bazi, xiyong, weatherData, gender, birthYear, birthMonth
   const musicList = MUSIC_DB[primaryXi] || MUSIC_DB['木'];
   const tomorrowMusic = musicList[Math.floor(Math.random()*musicList.length)];
 
-  // 明天治愈事件
+  // 小小治愈事件 —— 在网格渲染前先准备好数据（对齐 renderResult 顺序）
   const events = ENERGY_EVENTS[primaryXi] || ENERGY_EVENTS['木'];
   const shuffled = [...events].sort(() => Math.random() - 0.5);
   const picked = shuffled.slice(0, 4);
+  const energyHtml = `
+    <div class="module-card">
+      <div class="card-title">✦ 可以去做的小小治愈事件</div>
+      <div class="energy-strip">
+        ${picked.map((ev, i) => `<div class="energy-item">${svgIcon(ENERGY_ICONS[i % ENERGY_ICONS.length],'#5a5a5a',18)} ${ev}</div>`).join('')}
+      </div>
+    </div>`;
 
   // 明天断舍离
-  const dsList = DONGSHELJ_DB[tomorrowJinji] || DONGSHELJ_DB['火'];
+  const dsArr = DONGSHELJ_DB[tomorrowJinji] || DONGSHELJ_DB['火'];
+  const dsList = [...dsArr].sort(() => Math.random()-0.5).slice(0,3);
+  const dongsheljHtml = `
+    <div class="module-card">
+      <div class="module-content" style="text-align:center;">
+        <div style="font-weight:700;font-size:13px;margin-bottom:6px;">✦ 明日断舍离</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">明天适合清理这些小东西哦～</div>
+        <ul class="dongshelj-list" style="display:inline-block;text-align:left;">
+          ${dsList.map(item => `<li><span class="dongshelj-icon">${svgIcon('icon-broom','#3b7dd8',16)}</span>${item}</li>`).join('')}
+        </ul>
+      </div>
+    </div>`;
+
+  // ========= 组装左侧模块（穿搭类 5 个）=========
+  const clothingBasicHtml = `
+    <div class="module-card full-width">
+      <div class="module-icon">${svgIcon('icon-clothes','#1a1a1a',28)}</div>
+      <div class="module-title">明日穿搭建议</div>
+      <div class="module-content">${tomorrowClothing.text}</div>
+    </div>`;
+
+  const dressModuleHtml = `
+    <div class="module-card">
+      <div class="module-content">${tomorrowClothing.dress}</div>
+    </div>`;
+
+  const baseAccModuleHtml = `
+    <div class="module-card">
+      <div class="module-content">${tomorrowClothing.baseAcc}</div>
+    </div>`;
+
+  const crystalModuleHtml = `
+    <div class="module-card">
+      <div class="module-content">${tomorrowClothing.crystal}</div>
+    </div>`;
+
+  const jewelryModuleHtml = `
+    <div class="module-card">
+      <div class="module-content">${tomorrowClothing.jewelry}</div>
+    </div>`;
+
+  // ========= 组装右侧模块 =========
+  const foodHtml = `
+    <div class="module-card">
+      <div class="module-icon">${svgIcon('icon-food','#1a1a1a',28)}</div>
+      <div class="module-title">明天吃什么</div>
+      <div class="module-content">
+        明天适合来一份<strong>${tomorrowFood}</strong>。${tomorrowFood2 !== tomorrowFood ? `或者<strong>${tomorrowFood2}</strong>。` : ''}
+        <br><br>明天忌${tomorrowJinji}，建议少吃<strong>${tomorrowJinjiDetail.avoid}</strong>。${tomorrowJinjiDetail.examples}。<br><br>${tomorrowJinjiEnding}
+      </div>
+    </div>`;
+
+  const dramaHtml = `
+    <div class="module-card">
+      <div class="module-icon">${svgIcon('icon-drama','#1a1a1a',28)}</div>
+      <div class="module-title">明日推荐剧集</div>
+      <div class="module-content">
+        <strong>${tomorrowDrama.name}</strong> ${tomorrowDrama.ep}<br>
+        <span style="color:var(--text-muted);font-size:12px;line-height:1.6;">${tomorrowDrama.why}</span>
+      </div>
+    </div>`;
+
+  const musicHtml = `
+    <div class="module-card">
+      <div class="module-icon">${svgIcon('icon-music','#1a1a1a',28)}</div>
+      <div class="module-title">明日推荐歌曲</div>
+      <div class="module-content">
+        <strong>${tomorrowMusic.name}</strong> — ${tomorrowMusic.artist}<br>
+        <span style="color:var(--text-muted);font-size:12px;line-height:1.7;">${tomorrowMusic.mood}</span>
+      </div>
+    </div>`;
 
   // 能量速报图标
   const vibeEmojis = {'旺':'◈','顺':'◇','平':'○','弱':'◌','冲':'◉'};
 
-  const tomorrowHtml = '' +
+  document.getElementById('result-tomorrow').innerHTML =
     '<div class="card">' +
       '<div class="result-header">' +
-        '<div class="avatar-ring" id="result-icon-tomorrow">' +
+        '<div class="avatar-ring">' +
           '<svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#3b7dd8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
             '<circle cx="14" cy="14" r="5"/>' +
             '<line x1="14" y1="2" x2="14" y2="6"/>' +
@@ -2661,7 +3071,7 @@ function renderTomorrow(bazi, xiyong, weatherData, gender, birthYear, birthMonth
         '<div>' +
           '<div class="result-name">日主' + bazi[2].gan + '（' + GAN_WX[GAN.indexOf(bazi[2].gan)] + '）· 喜' + xiyong.xi.join('、') + '</div>' +
           '<div class="result-sub">' + bazi.map(c=>c.gan+c.zhi).join(' ') + '</div>' +
-          '<div class="result-date">' + tomorrow.getFullYear() + '年' + (tomorrow.getMonth()+1) + '月' + tomorrow.getDate() + '日' + (hasTomorrowWeather ? ' · ' + tomorrowWeather.minTemp + '～' + tomorrowWeather.maxTemp + '℃' : '') + '</div>' +
+          '<div class="result-date">' + tomorrow.getFullYear() + '年' + (tomorrow.getMonth()+1) + '月' + tomorrow.getDate() + '日' + '</div>' +
         '</div>' +
       '</div>' +
       '<div class="today-vibe">' +
@@ -2672,59 +3082,21 @@ function renderTomorrow(bazi, xiyong, weatherData, gender, birthYear, birthMonth
 
     '<div class="modules-grid">' +
       '<div class="modules-left">' +
-        '<div class="module-card">' +
-          '<div class="module-icon">' + svgIcon('icon-clothes','#1a1a1a',28) + '</div>' +
-          '<div class="module-title">明日穿搭建议</div>' +
-          '<div class="module-content">' +
-            (tomorrowClothing.weatherTag ? '<div class="weather-tag">' + svgIcon('icon-leaf','#4a6fa8',14) + ' ' + tomorrowClothing.weatherTag + '</div>' : '') +
-            tomorrowClothing.text +
-          '</div>' +
-        '</div>' +
+        clothingBasicHtml +
+        dressModuleHtml +
+        baseAccModuleHtml +
+        crystalModuleHtml +
+        jewelryModuleHtml +
       '</div>' +
       '<div class="modules-right">' +
-        '<div class="module-card">' +
-          '<div class="module-icon">' + svgIcon('icon-food','#1a1a1a',28) + '</div>' +
-          '<div class="module-title">明天吃什么</div>' +
-          '<div class="module-content">' +
-            '明天适合来一份<strong>' + tomorrowFood + '</strong>。' + (tomorrowFood2 !== tomorrowFood ? '或者<strong>' + tomorrowFood2 + '</strong>。' : '') +
-            '<br><br>明天忌' + tomorrowJinji + '，建议少吃<strong>' + tomorrowJinjiDetail.avoid + '</strong>。<br><br>' + tomorrowJinjiEnding +
-          '</div>' +
-        '</div>' +
-        '<div class="module-card">' +
-          '<div class="module-icon">' + svgIcon('icon-drama','#1a1a1a',28) + '</div>' +
-          '<div class="module-title">明日推荐剧集</div>' +
-          '<div class="module-content">' +
-            '<strong>' + tomorrowDrama.name + '</strong> ' + tomorrowDrama.ep + '<br>' +
-            '<span style="color:var(--text-muted);font-size:12px;line-height:1.6;">' + tomorrowDrama.why + '</span>' +
-          '</div>' +
-        '</div>' +
-        '<div class="module-card">' +
-          '<div class="module-icon">' + svgIcon('icon-music','#1a1a1a',28) + '</div>' +
-          '<div class="module-title">明日推荐歌曲</div>' +
-          '<div class="module-content">' +
-            '<strong>' + tomorrowMusic.name + '</strong> — ' + tomorrowMusic.artist + '<br>' +
-            '<span style="color:var(--text-muted);font-size:12px;line-height:1.7;">' + tomorrowMusic.mood + '</span>' +
-          '</div>' +
-        '</div>' +
+        foodHtml +
+        dramaHtml +
+        musicHtml +
+        dongsheljHtml +
+        energyHtml +
       '</div>' +
-    '</div>' +
-
-    '<div class="card">' +
-      '<div class="card-title">✦ 可以去做的小小治愈事件</div>' +
-      '<div class="energy-strip">' +
-        picked.map(function(ev, i) { return '<div class="energy-item">' + svgIcon(ENERGY_ICONS[i % ENERGY_ICONS.length],'#5a5a5a',18) + ' ' + ev + '</div>'; }).join('') +
-      '</div>' +
-    '</div>' +
-
-    '<div class="card">' +
-      '<div class="card-title">✦ 明日断舍离</div>' +
-      '<div class="card-subtitle">明天适合清理这些小东西哦～</div>' +
-      '<ul class="dongshelj-list">' +
-        dsList.map(function(item) { return '<li><span class="dongshelj-icon">' + svgIcon('icon-broom','#3b7dd8',16) + '</span>' + item + '</li>'; }).join('') +
-      '</ul>' +
     '</div>';
 
-  document.getElementById('result-tomorrow').innerHTML = tomorrowHtml;
   document.getElementById('result-tabs').style.display = 'flex';
 }
 
