@@ -1233,11 +1233,13 @@ function getMonthGanZhi(yearGan, year, month, day) {
   return { gan: GAN[mganIdx], zhi: mzhi };
 }
 function getDayGanZhi(year, month, day) {
-  const base = new Date(1900, 0, 1);
+  // 基准：1991-04-23 = 癸亥（癸=9，亥=11）
+  // 以基准日为参考点计算任意日期的日柱，彻底避免时区漂移
+  const ref = new Date(1991, 3, 23);
   const target = new Date(year, month - 1, day);
-  const diff = Math.floor((target - base) / 86400000);
-  const ganIdx = (diff + 10 + 6000) % 10;
-  const zhiIdx = (diff + 10 + 6000) % 12;
+  const diff = Math.round((target - ref) / 86400000);
+  const ganIdx = ((9 + diff) % 10 + 10) % 10;
+  const zhiIdx = ((11 + diff) % 12 + 12) % 12;
   return { gan: GAN[ganIdx], zhi: ZHI[zhiIdx] };
 }
 function getHourGanZhi(dayGan, hour) {
