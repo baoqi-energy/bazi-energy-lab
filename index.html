@@ -348,6 +348,59 @@
   .dongshelj-list li:last-child { border-bottom: none; }
   .dongshelj-icon { flex-shrink: 0; margin-top: 1px; }
 
+  /* ===== 时辰身心卡片 ===== */
+  .shichen-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 22px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+  .shichen-title { font-size: 17px; font-weight: 800; margin-bottom: 4px; }
+  .shichen-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
+  .shichen-tabs {
+    display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px;
+  }
+  .shichen-tab {
+    padding: 4px 12px; border-radius: 20px; font-size: 12px;
+    cursor: pointer; border: 1.5px solid var(--border);
+    background: transparent; color: var(--text-secondary);
+    font-family: inherit; font-weight: 600; transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .shichen-tab.active, .shichen-tab:hover {
+    background: var(--accent-light); color: var(--accent); border-color: var(--accent);
+  }
+  .shichen-tab.current-time {
+    background: var(--accent); color: #fff; border-color: var(--accent);
+  }
+  .shichen-content {
+    background: var(--surface2); border-radius: var(--radius-sm);
+    padding: 16px 18px;
+  }
+  .shichen-name {
+    font-size: 15px; font-weight: 800; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .shichen-time-badge {
+    font-size: 11px; font-weight: 600; color: var(--text-muted);
+    background: var(--surface); border-radius: 10px;
+    padding: 2px 8px; border: 1px solid var(--border);
+  }
+  .shichen-emotion {
+    font-size: 13px; color: var(--text-secondary); line-height: 1.8;
+    margin-bottom: 10px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .shichen-body {
+    font-size: 13px; color: var(--text-secondary); line-height: 1.8;
+  }
+  .shichen-label {
+    display: inline-block; font-size: 11px; font-weight: 700;
+    color: var(--accent); margin-bottom: 4px; letter-spacing: 0.8px;
+  }
+
   /* ===== FOOTER ===== */
   .site-footer {
     text-align: center; padding: 32px 20px;
@@ -531,6 +584,8 @@
       <div class="card" id="energy-card"></div>
       <!-- 断舍离 -->
       <div class="card" id="dongshelj-card"></div>
+      <!-- 时辰身心状态 -->
+      <div class="shichen-card" id="shichen-card"></div>
       </div><!-- /result-today -->
       <div id="result-tomorrow" style="display:none;"></div>
 
@@ -1136,12 +1191,45 @@ function getYearGanZhi(year) {
   const zhiIdx = (year - 4 + 1200) % 12;
   return { gan: GAN[ganIdx], zhi: ZHI[zhiIdx] };
 }
-const YEAR_TO_MONTH_GAN_OFFSET = {'甲':2,'己':2,'乙':4,'庚':4,'丙':6,'辛':6,'丁':8,'壬':8,'戊':0,'癸':0};
-const MONTH_ZHI = ['寅','卯','辰','巳','午','未','申','酉','戌','亥','子','丑'];
-function getMonthGanZhi(yearGan, month) {
-  const mzhi = MONTH_ZHI[(month - 1) % 12];
-  const startOffset = YEAR_TO_MONTH_GAN_OFFSET[yearGan] !== undefined ? YEAR_TO_MONTH_GAN_OFFSET[yearGan] : 0;
-  const mganIdx = (startOffset + (month - 1)) % 10;
+// ===== 精确24节气计算（经验公式，适用于2000-2099年） =====
+// 公式：Math.floor(y * 0.2422 + C) - Math.floor(y / 4)，y=年份后两位
+// 八字月柱只用12个"节"（小寒、立春、惊蛰、清明、立夏、芒种、小暑、立秋、白露、寒露、立冬、大雪）
+// 每个节开始新的月支，格式：[节气月, 节气日, 节气后月支]
+const JIEQI_CONSTANTS = [
+  [1, 5.4055, '丑'],   // 小寒 → 丑月
+  [2, 3.87, '寅'],    // 立春 → 寅月
+  [3, 5.63, '卯'],    // 惊蛰 → 卯月
+  [4, 4.81, '辰'],    // 清明 → 辰月
+  [5, 5.52, '巳'],    // 立夏 → 巳月
+  [6, 5.678, '午'],   // 芒种 → 午月
+  [7, 7.108, '未'],   // 小暑 → 未月
+  [8, 7.5, '申'],     // 立秋 → 申月
+  [9, 7.646, '酉'],   // 白露 → 酉月
+  [10, 8.318, '戌'],  // 寒露 → 戌月
+  [11, 7.438, '亥'],  // 立冬 → 亥月
+  [12, 7.18, '子']    // 大雪 → 子月
+];
+const MONTH_ZHI_ORDER = ['寅','卯','辰','巳','午','未','申','酉','戌','亥','子','丑'];
+const YEAR_GAN_TO_MONTH_START = {'甲':2,'己':2,'乙':4,'庚':4,'丙':6,'辛':6,'丁':8,'壬':8,'戊':0,'癸':0};
+function calcJieQiDay(year, month, constant) {
+  const y = year % 100;
+  return Math.floor(y * 0.2422 + constant) - Math.floor(y / 4);
+}
+function getMonthZhi(year, month, day) {
+  // 找到当月对应的节气（每个公历月只有1个"节"用于换月）
+  const jq = JIEQI_CONSTANTS.find(j => j[0] === month);
+  if (!jq) return MONTH_ZHI_ORDER[(month - 1) % 12];
+  const jqDay = calcJieQiDay(year, month, jq[1]);
+  // 月支顺序：前一个月支 → 节气后月支
+  const prevIdx = MONTH_ZHI_ORDER.indexOf(jq[2]);
+  const prevZhi = prevIdx > 0 ? MONTH_ZHI_ORDER[prevIdx - 1] : MONTH_ZHI_ORDER[11];
+  return day >= jqDay ? jq[2] : prevZhi;
+}
+function getMonthGanZhi(yearGan, year, month, day) {
+  const mzhi = getMonthZhi(year, month, day);
+  const mIdx = MONTH_ZHI_ORDER.indexOf(mzhi);
+  const startGanIdx = YEAR_GAN_TO_MONTH_START[yearGan] !== undefined ? YEAR_GAN_TO_MONTH_START[yearGan] : 0;
+  const mganIdx = (startGanIdx + mIdx) % 10;
   return { gan: GAN[mganIdx], zhi: mzhi };
 }
 function getDayGanZhi(year, month, day) {
@@ -1161,7 +1249,7 @@ function getHourGanZhi(dayGan, hour) {
 }
 function calcBazi(year, month, day, hour) {
   const y = getYearGanZhi(year);
-  const m = getMonthGanZhi(y.gan, month);
+  const m = getMonthGanZhi(y.gan, year, month, day);
   const d = getDayGanZhi(year, month, day);
   const h = getHourGanZhi(d.gan, hour);
   return [
@@ -1396,33 +1484,56 @@ async function fetchWeather(cityName) {
   if (!cityName || cityName.length < 2) return null;
   try {
     document.getElementById('weather-status').textContent = '🔍 正在获取天气…';
-    const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1&language=zh&format=json`;
-    const geoRes = await fetch(geoUrl, { signal: AbortSignal.timeout(5000) });
-    const geoData = await geoRes.json();
-    if (!geoData.results || geoData.results.length === 0) {
-      document.getElementById('weather-status').textContent = '⚠ 未找到城市天气，穿衣建议将使用通用版';
+    // 兼容性：AbortSignal.timeout 可能不被旧浏览器支持
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+    const geoUrl = 'https://geocoding-api.open-meteo.com/v1/search?name=' + encodeURIComponent(cityName) + '&count=1&language=zh&format=json';
+    const geoRes = await fetch(geoUrl, { signal: controller.signal });
+    if (!geoRes.ok) {
+      clearTimeout(timeoutId);
+      document.getElementById('weather-status').textContent = '⚠ 城市查询失败，穿衣建议将使用通用版';
       return null;
     }
-    const { latitude, longitude, name } = geoData.results[0];
+    const geoData = await geoRes.json();
+    if (!geoData.results || geoData.results.length === 0) {
+      clearTimeout(timeoutId);
+      document.getElementById('weather-status').textContent = '⚠ 未找到该城市，穿衣建议将使用通用版';
+      return null;
+    }
+    const lat = geoData.results[0].latitude;
+    const lon = geoData.results[0].longitude;
+    const cityNameDisplay = geoData.results[0].name;
     // 获取今天+明天的天气（forecast_days=2）
-    const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,weather_code&hourly=temperature_2m&current=temperature_2m,weather_code&timezone=auto&forecast_days=2`;
-    const wRes = await fetch(weatherUrl, { signal: AbortSignal.timeout(5000) });
+    const weatherUrl = 'https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon + '&daily=temperature_2m_max,temperature_2m_min,weather_code&hourly=temperature_2m&current=temperature_2m,weather_code&timezone=auto&forecast_days=2';
+    const wRes = await fetch(weatherUrl, { signal: controller.signal });
+    clearTimeout(timeoutId);
+    if (!wRes.ok) {
+      document.getElementById('weather-status').textContent = '⚠ 天气数据获取失败，穿衣建议将使用通用版';
+      return null;
+    }
     const wData = await wRes.json();
+
+    if (!wData.current || !wData.daily) {
+      document.getElementById('weather-status').textContent = '⚠ 天气数据格式异常，穿衣建议将使用通用版';
+      return null;
+    }
 
     const result = {
       maxTemp: Math.round(wData.daily.temperature_2m_max[0]),
       minTemp: Math.round(wData.daily.temperature_2m_min[0]),
       currentTemp: Math.round(wData.current.temperature_2m),
       weatherCode: wData.current.weather_code,
-      cityDisplay: name,
+      cityDisplay: cityNameDisplay,
       tomorrowMax: Math.round(wData.daily.temperature_2m_max[1]),
       tomorrowMin: Math.round(wData.daily.temperature_2m_min[1]),
       tomorrowCode: wData.daily.weather_code[1]
     };
 
-    document.getElementById('weather-status').textContent = `✓ ${name} · 今日 ${result.minTemp}～${result.maxTemp}℃`;
+    document.getElementById('weather-status').textContent = '✓ ' + cityNameDisplay + ' · 今日 ' + result.minTemp + '～' + result.maxTemp + '℃';
     return result;
   } catch (e) {
+    console.warn('[天气获取失败]', e.name, e.message);
     document.getElementById('weather-status').textContent = '⚠ 天气获取失败，穿衣建议将使用通用版';
     return null;
   }
@@ -1454,28 +1565,123 @@ const WX_COLOR_INFO = {
   '水': { label:'水色', colors:'黑色、深蓝、深灰', main:'黑色/深蓝色系', hex:['#000000','#1d3557','#457b9d'] }
 };
 
-// 配饰推荐（按五行，多样化：手链、项链、耳饰、戒指、手表、包、帽、围巾等）
+// 配饰推荐（按五行，手链/项链/耳饰/戒指各一品种+颜色描述，专业术语，不重叠）
 const ACCESSORIES = {
-  '木': [
-    '绿幽灵/绿发晶手链','橄榄石/沙弗莱石项链','木质/绿檀耳饰','孔雀石戒指',
-    '军绿色棒球帽','橄榄绿棉质围巾','绿色系帆布托特包','竹节纹银手镯'
-  ],
-  '火': [
-    '冰粉晶/石榴石手链','玫瑰金/红纹石项链','朱砂/红兔毛耳钉','珊瑚/红纹石戒指',
-    '温暖橘色针织围巾','砖红色皮带','玫瑰金手表','暖色系斜挎包'
-  ],
-  '土': [
-    '琥珀/蜜蜡/黄水晶手链','驼色/金发晶项链','黄水晶/蜜蜡耳饰','琥珀/黄水晶戒指',
-    '驼色/奶茶色编织围巾','卡其色棒球帽','棕色皮带','陶土色/驼色托特包'
-  ],
-  '金': [
-    '白水晶/透石膏手链','珍珠/白玛瑙项链','银色/白K金耳线','珍珠/白玉戒指',
-    '银色手表/白金手表','米白色羊绒围巾','白色/银灰色棒球帽','铂金/银饰系手镯'
-  ],
-  '水': [
-    '黑曜石/黑碧玺手链','海蓝宝/蓝晶石项链','蓝宝石/黑曜石耳饰','海蓝宝/蓝宝石戒指',
-    '深蓝色针织围巾','黑色/深蓝棒球帽','黑色/深蓝皮带','黑色/深蓝双肩包'
-  ]
+  '木': {
+    bracelet: [
+      { name: '绿幽灵手链', desc: '深绿色通透，带幽灵幽浮感，整体气场往上走' },
+      { name: '绿发晶手链', desc: '绿色发丝若隐若现，清透又有层次感' },
+      { name: '孔雀石手链', desc: '纹理天然，深深浅浅的绿，很有故事感' },
+      { name: '橄榄石手链', desc: '嫩黄绿色，透亮干净，配白色衣服绝了' },
+      { name: '萤石手链', desc: '薄荷绿带透感，像春天里新长出来的叶子' }
+    ],
+    necklace: [
+      { name: '沙弗莱石项链', desc: '高饱和绿色，颗粒感强，精致又不俗' },
+      { name: '绿松石项链', desc: '天空蓝中透着绿，古朴又现代，百搭' },
+      { name: '翡翠素圈项链', desc: '浅绿通透，细圈素净，气质立刻上来' }
+    ],
+    earring: [
+      { name: '绿玛瑙耳钉', desc: '低调绿色，圆形耳钉，日常百搭款' },
+      { name: '木质圆形耳饰', desc: '原木纹理，轻盈不坠耳，自然清新' },
+      { name: '绿色捷克珠耳线', desc: '垂坠感，绿珠串联，简单显气质' }
+    ],
+    ring: [
+      { name: '孔雀石戒指', desc: '绿色纹理天然，戴上就是一件装饰品' },
+      { name: '翡翠戒面戒指', desc: '浅绿通透，细腻温润，复古又时髦' }
+    ]
+  },
+  '火': {
+    bracelet: [
+      { name: '冰粉晶手链', desc: '浅粉通透，细腻发光，温柔又有女人味' },
+      { name: '石榴石手链', desc: '深酒红色，颗粒饱满，低调里透着热情' },
+      { name: '红纹石手链', desc: '玫粉带纹，颜色明媚，戴上心情都暖了' },
+      { name: '樱花玛瑙手链', desc: '粉白相间，如樱花瓣散落，清甜感十足' },
+      { name: '芙蓉石（粉晶）手链', desc: '粉色温润，亮度柔和，适合所有肤色' }
+    ],
+    necklace: [
+      { name: '玫瑰金项链（素圈）', desc: '暖粉金色，细圈显纤细，配领口很好看' },
+      { name: '红碧玺项链', desc: '通红透亮，精致奢感，适合出席场合' },
+      { name: '珊瑚素珠项链', desc: '橙红暖调，圆润素净，成熟女性最爱' }
+    ],
+    earring: [
+      { name: '朱砂耳钉', desc: '小颗红点，低调提色，出门必备基础款' },
+      { name: '红兔毛球耳饰', desc: '绒感小球，暖橘粉色，可爱又减龄' },
+      { name: '玫瑰金耳圈', desc: '金属感耳圈，暖色细圈，极简好看' }
+    ],
+    ring: [
+      { name: '石榴石戒指', desc: '酒红色深邃，镶嵌款显气质' },
+      { name: '红纹石戒指', desc: '粉红带纹，天然花纹，每一枚都独一无二' }
+    ]
+  },
+  '土': {
+    bracelet: [
+      { name: '蜜蜡手链', desc: '金黄到棕黄，蜡质感温润，久戴越发光泽' },
+      { name: '琥珀手链', desc: '透亮金棕，有时能看到天然包裹物，有故事' },
+      { name: '黄水晶手链', desc: '明亮柠檬黄，清爽通透，气场明朗' },
+      { name: '金发晶手链', desc: '金色发丝密集，贵气但不艳，自带高级感' },
+      { name: '虎眼石手链', desc: '棕金交错的丝绢光，稳重中透着气场' }
+    ],
+    necklace: [
+      { name: '蜜蜡素珠项链', desc: '棕黄色圆珠，温润不夸张，成熟知性感' },
+      { name: '黄碧玺项链', desc: '金黄通透，轻盈细腻，适合日常佩戴' },
+      { name: '金发晶项链', desc: '金线流动感，出门就是焦点，贵气拉满' }
+    ],
+    earring: [
+      { name: '蜜蜡耳钉', desc: '小颗棕黄，温润不俗，低调贵气' },
+      { name: '黄水晶耳线', desc: '垂坠感，柠檬黄亮色，脸色立刻明亮' },
+      { name: '金色不规则耳夹', desc: '哑金质感，不规则造型，艺术感强' }
+    ],
+    ring: [
+      { name: '琥珀戒指', desc: '透亮棕黄，天然纹理，复古艺术范' },
+      { name: '黄水晶戒指', desc: '明黄透亮，简单镶嵌款，阳光感足' }
+    ]
+  },
+  '金': {
+    bracelet: [
+      { name: '白水晶手链', desc: '纯净通透，最干净的水晶，适合日常百搭' },
+      { name: '透石膏手链', desc: '白中带光，细腻矿石感，空灵又高级' },
+      { name: '白玛瑙手链', desc: '乳白色温润，哑光质感，低调奢华' },
+      { name: '月光石手链', desc: '蓝白流光，像月亮的颜色，神秘又细腻' },
+      { name: '珍珠手链', desc: '奶白光泽，经典款，任何风格都能驾驭' }
+    ],
+    necklace: [
+      { name: '珍珠项链（短款）', desc: '单层或多层，简洁干净，显脸小' },
+      { name: '银色细圈项链', desc: '极简银圈，搭配任何衣领都好看' },
+      { name: '白玉吊坠项链', desc: '白色玉石，素净温润，气质直接拉满' }
+    ],
+    earring: [
+      { name: '珍珠耳钉', desc: '圆形奶白，基础款，日常上班或约会都合适' },
+      { name: '银色耳线', desc: '细银圈，轻盈，搭短发很出挑' },
+      { name: '白色树脂耳夹', desc: '哑白质感，几何形，简约设计感强' }
+    ],
+    ring: [
+      { name: '珍珠戒指', desc: '珍珠搭银托，清新极简，女性专属美' },
+      { name: '白玉戒指', desc: '白色温润，素戒款，任何手型都适合' }
+    ]
+  },
+  '水': {
+    bracelet: [
+      { name: '黑曜石手链', desc: '纯黑光泽，矿石质感强，气场稳定扎实' },
+      { name: '黑碧玺手链', desc: '深黑带电气石纹，通透中透着力量感' },
+      { name: '海蓝宝手链', desc: '浅蓝通透，如海水般干净，清爽安静' },
+      { name: '蓝晶石手链', desc: '深蓝带石纹，沉稳大气，知性感强' },
+      { name: '青金石手链', desc: '深蓝夹金点，高贵沉稳，适合正式场合' }
+    ],
+    necklace: [
+      { name: '海蓝宝项链', desc: '浅蓝透亮，细颗粒感，清透显气质' },
+      { name: '蓝宝石项链', desc: '深蓝浓郁，经典奢感，低调中有品位' },
+      { name: '黑玛瑙项链', desc: '纯黑光泽，圆珠简洁，搭浅色衣服极好' }
+    ],
+    earring: [
+      { name: '黑曜石耳钉', desc: '小颗纯黑，哑光质感，简洁利落' },
+      { name: '海蓝宝耳线', desc: '浅蓝垂坠，清透感强，修饰脸型效果好' },
+      { name: '深蓝釉面耳圈', desc: '宝蓝色磨砂金属圈，设计感强' }
+    ],
+    ring: [
+      { name: '青金石戒指', desc: '深蓝夹金纹，宝石质感，自带贵气' },
+      { name: '黑曜石戒指', desc: '纯黑光洁，简洁款，男女都适合' }
+    ]
+  }
 };
 
 function getClothingAdvice(xiList, weather, noCity, gender) {
@@ -1492,11 +1698,10 @@ function getClothingAdvice(xiList, weather, noCity, gender) {
     '金': ['白色衬衫','银灰色西装外套','米白色针织衫','浅灰连帽卫衣','珍珠白棒球服','银灰运动外套'],
     '水': ['黑色西装外套','深蓝色牛仔夹克','藏青色毛呢大衣','深灰连帽卫衣','炭灰棒球服','黑色冲锋衣']
   };
-  // 从每个喜用五行中随机选1个上装
-  const topRecs = xiList.map(w => {
-    const opts = topOptions[w] || topOptions['木'];
-    return opts[Math.floor(Math.random() * opts.length)];
-  });
+  // 上装：从所有喜用五行的上装池中，随机选1款
+  const allTops = [];
+  xiList.forEach(w => { const opts = topOptions[w] || topOptions['木']; allTops.push(...opts); });
+  const topRec = allTops[Math.floor(Math.random() * allTops.length)];
 
   // 下装选项（使用专业词汇，含中性/运动/工装风格）
   const bottomOptions = {
@@ -1506,14 +1711,14 @@ function getClothingAdvice(xiList, weather, noCity, gender) {
     '金': ['米白色直筒裤','浅灰运动裤/慢跑裤','白色牛仔裤','珍珠白休闲裤'],
     '水': ['黑色西裤/运动裤','深蓝直筒裤/运动短裤','深灰毛呢裙','炭灰工装裤']
   };
-  // 从每个喜用五行中随机选1个下装
-  const bottomRecs = xiList.map(w => {
-    const opts = bottomOptions[w] || bottomOptions['木'];
-    return opts[Math.floor(Math.random() * opts.length)];
-  });
-  if (!isMale) {
-    const skirtOptions = ['深蓝百褶裙','黑色A字裙','深灰直筒裙','奶茶色针织裙'];
-    bottomRecs.push(skirtOptions[Math.floor(Math.random() * skirtOptions.length)]);
+  // 下装：从所有喜用五行的下装池中，随机选1款
+  const allBottoms = [];
+  xiList.forEach(w => { const opts = bottomOptions[w] || bottomOptions['木']; allBottoms.push(...opts); });
+  let bottomRec = allBottoms[Math.floor(Math.random() * allBottoms.length)];
+  // 女性：50%概率推荐半裙代替下装
+  if (!isMale && Math.random() < 0.5) {
+    const skirtOpts = ['深蓝百褶裙','黑色A字裙','深灰直筒裙','奶茶色针织裙'];
+    bottomRec = skirtOpts[Math.floor(Math.random() * skirtOpts.length)];
   }
 
   // 连衣裙（仅女性，含多种风格）
@@ -1524,33 +1729,160 @@ function getClothingAdvice(xiList, weather, noCity, gender) {
     '金': ['白色/银灰色系连衣裙','米白色运动连衣裙','珍珠白法式连衣裙'],
     '水': ['黑色/深蓝色系连衣裙','深蓝碎花连衣裙','炭灰运动连衣裙']
   };
-  const onePieceList = xiList.map(w => {
-    const opts = onePieceOptions[w] || onePieceOptions['木'];
-    return opts[Math.floor(Math.random() * opts.length)];
-  });
-  const onePiece = onePieceList.join('，或');
+  // 连衣裙：仅女性，从所有喜用五行的连衣裙池中，随机选1款
+  let onePieceRec = null;
+  if (!isMale) {
+    const allOnePieces = [];
+    xiList.forEach(w => { const opts = onePieceOptions[w] || onePieceOptions['木']; allOnePieces.push(...opts); });
+    onePieceRec = allOnePieces[Math.floor(Math.random() * allOnePieces.length)];
+  }
 
-  // 鞋子选项（现实常见款式，含中性/运动风格）
-  const shoeOptions = {
-    '木': ['棕色乐福鞋','绿色帆布鞋/板鞋','橄榄绿运动鞋/慢跑鞋','深绿登山鞋/工装靴'],
-    '火': ['橘色/暖色系运动鞋','深棕切尔西靴','酒红帆布鞋/板鞋','暖色系老爹鞋'],
-    '土': ['驼色短靴/切尔西靴','棕色乐福鞋','卡其色帆布鞋/板鞋','奶茶色运动鞋/老爹鞋'],
-    '金': ['白色/银色系运动鞋/板鞋','银色老爹鞋','浅灰皮鞋/乐福鞋','米白色帆布鞋'],
-    '水': ['黑色运动鞋/慢跑鞋','深蓝帆布鞋/板鞋','黑白拼色板鞋','黑色切尔西靴/工装靴']
+  // 鞋款数据库（按五行+颜色+性别分组，专业款式名称）
+  // 每个五行下分：中性款、女款、男款；每组3款
+  const SHOE_DB = {
+    '木': {
+      neutral: [
+        { color: '橄榄绿', style: '帆布板鞋' },
+        { color: '军绿', style: '工装靴' },
+        { color: '苔藓绿', style: '运动慢跑鞋' },
+        { color: '深绿', style: '低帮篮球鞋' },
+        { color: '草木绿', style: '休闲德训鞋' }
+      ],
+      female: [
+        { color: '薄荷绿', style: '厚底乐福鞋' },
+        { color: '豆绿', style: '玛丽珍平底鞋' },
+        { color: '橄榄绿', style: '切尔西短靴' },
+        { color: '苔藓绿', style: '系带牛津鞋' },
+        { color: '竹青', style: '低跟穆勒鞋' }
+      ],
+      male: [
+        { color: '深绿', style: '户外登山鞋' },
+        { color: '橄榄绿', style: '大头皮鞋' },
+        { color: '军绿', style: '休闲运动鞋' },
+        { color: '棕绿', style: '沙漠靴' },
+        { color: '卡其绿', style: '乐福鞋' }
+      ]
+    },
+    '火': {
+      neutral: [
+        { color: '砖红', style: '帆布高帮球鞋' },
+        { color: '暖橘', style: '运动慢跑鞋' },
+        { color: '酒红', style: '休闲德训鞋' },
+        { color: '橘棕', style: '工装靴' },
+        { color: '玫粉', style: '厚底老爹鞋' }
+      ],
+      female: [
+        { color: '玫瑰红', style: '细跟高跟鞋' },
+        { color: '砖红', style: '切尔西短靴' },
+        { color: '橘粉', style: '厚底乐福鞋' },
+        { color: '酒红', style: '玛丽珍粗跟鞋' },
+        { color: '暖橘', style: '系带凉鞋' }
+      ],
+      male: [
+        { color: '深棕', style: '布洛克皮鞋' },
+        { color: '红棕', style: '切尔西靴' },
+        { color: '砖红', style: '休闲皮鞋' },
+        { color: '暗橘', style: '复古运动鞋' },
+        { color: '酒红', style: '乐福鞋' }
+      ]
+    },
+    '土': {
+      neutral: [
+        { color: '驼色', style: '帆布板鞋' },
+        { color: '奶茶色', style: '运动休闲鞋' },
+        { color: '卡其', style: '工装靴' },
+        { color: '棕色', style: '休闲德训鞋' },
+        { color: '焦糖色', style: '厚底老爹鞋' }
+      ],
+      female: [
+        { color: '驼色', style: '切尔西短靴' },
+        { color: '奶茶色', style: '厚底乐福鞋' },
+        { color: '燕麦色', style: '圆头低跟单鞋' },
+        { color: '棕色', style: '玛丽珍平底鞋' },
+        { color: '沙棕', style: '系带牛津鞋' }
+      ],
+      male: [
+        { color: '棕色', style: '沙漠靴' },
+        { color: '驼色', style: '皮质乐福鞋' },
+        { color: '卡其', style: '户外徒步鞋' },
+        { color: '深棕', style: '手工缝线皮鞋' },
+        { color: '奶茶色', style: '休闲运动鞋' }
+      ]
+    },
+    '金': {
+      neutral: [
+        { color: '纯白', style: '小白鞋/板鞋' },
+        { color: '米白', style: '帆布德训鞋' },
+        { color: '银灰', style: '运动慢跑鞋' },
+        { color: '珍珠白', style: '厚底老爹鞋' },
+        { color: '浅灰', style: '休闲运动鞋' }
+      ],
+      female: [
+        { color: '纯白', style: '细跟尖头高跟鞋' },
+        { color: '珍珠白', style: '厚底乐福鞋' },
+        { color: '米白', style: '系带牛津鞋' },
+        { color: '银白', style: '玛丽珍粗跟鞋' },
+        { color: '浅灰', style: '低帮切尔西靴' }
+      ],
+      male: [
+        { color: '纯白', style: '休闲皮鞋' },
+        { color: '浅灰', style: '布洛克皮鞋' },
+        { color: '米白', style: '帆布高帮球鞋' },
+        { color: '银灰', style: '运动鞋' },
+        { color: '白色', style: '乐福鞋' }
+      ]
+    },
+    '水': {
+      neutral: [
+        { color: '纯黑', style: '帆布板鞋' },
+        { color: '深蓝', style: '运动慢跑鞋' },
+        { color: '炭灰', style: '工装靴' },
+        { color: '藏青', style: '休闲德训鞋' },
+        { color: '黑白拼色', style: '低帮篮球鞋' }
+      ],
+      female: [
+        { color: '纯黑', style: '切尔西踝靴' },
+        { color: '深蓝', style: '厚底乐福鞋' },
+        { color: '炭黑', style: '细跟尖头高跟鞋' },
+        { color: '藏青', style: '系带牛津鞋' },
+        { color: '黑色', style: '玛丽珍粗跟鞋' }
+      ],
+      male: [
+        { color: '纯黑', style: '切尔西靴' },
+        { color: '深蓝', style: '帆布高帮球鞋' },
+        { color: '炭灰', style: '布洛克皮鞋' },
+        { color: '墨黑', style: '运动鞋' },
+        { color: '藏青', style: '乐福鞋' }
+      ]
+    }
   };
-  // 从每个喜用五行中随机选1个鞋子
-  const shoeRecs = xiList.map(w => {
-    const opts = shoeOptions[w] || shoeOptions['木'];
-    return opts[Math.floor(Math.random() * opts.length)];
+  // 鞋款：从所有喜用五行的鞋款池中，随机选2-3款
+  const allShoes = [];
+  xiList.forEach(w => {
+    const db = SHOE_DB[w] || SHOE_DB['木'];
+    const neutralPool = db.neutral || [];
+    const genderedPool = isMale ? (db.male || []) : (db.female || []);
+    allShoes.push(...neutralPool, ...genderedPool);
   });
+  const shuffledShoes = [...allShoes].sort(() => Math.random() - 0.5);
+  const shoeRecs = shuffledShoes.slice(0, 3);
 
-  // 配饰（每个喜用五行随机推荐1-2个，不去重，保证内容丰富）
-  const accRecs = xiList.flatMap(w => {
-    const opts = ACCESSORIES[w] || ACCESSORIES['木'];
-    const count = Math.random() > 0.5 ? 2 : 1; // 随机推荐1-2个
-    const shuffled = opts.sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, count);
+  // 配饰：手链2款（不同品种）+ 耳饰1款，不显示desc
+  const allBracelets = [];
+  const allEarrings = [];
+  xiList.forEach(w => {
+    const db = ACCESSORIES[w] || ACCESSORIES['木'];
+    allBracelets.push(...db.bracelet);
+    allEarrings.push(...db.earring);
   });
+  const shuffledB = [...allBracelets].sort(() => Math.random() - 0.5);
+  const selectedB = shuffledB.slice(0, 2);
+  const selectedE = allEarrings[Math.floor(Math.random() * allEarrings.length)];
+  const accRecs = [
+    { type: '手链', name: selectedB[0].name },
+    { type: '手链', name: selectedB[1].name },
+    { type: '耳饰', name: selectedE.name }
+  ];
 
   // 天气描述（活人感）
   let weatherHtml = '';
@@ -1592,21 +1924,16 @@ function getClothingAdvice(xiList, weather, noCity, gender) {
     return mats[Math.floor(Math.random() * mats.length)];
   });
 
-  // 组装输出（充实内容）
+  // 组装输出（精简版，去五行术语，去整体风格段）
   let outfitHtml = '';
-
-  // 搭配建议（顶部）
-  outfitHtml += '<div style="font-size:13px;line-height:1.8;color:var(--text-secondary);margin-bottom:10px;padding:8px 12px;background:var(--surface2);border-radius:var(--radius-sm);">' +
-    styleTip +
-    '</div>';
 
   // 上装
   outfitHtml += '<div style="margin:8px 0;">' +
     '<div style="font-weight:700;font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">' +
     '<span style="font-size:11px;color:var(--accent);">👕</span>上装推荐' +
     '</div>' +
-    '<div style="font-size:13px;line-height:1.8;color:var(--text-primary);">' + topRecs.join(' / ') + '</div>' +
-    '<div style="font-size:11px;color:var(--text-muted);margin-top:3px;">材质推荐：' + materialSuggestions.slice(0,2).join('、') + '</div>' +
+    '<div style="font-size:13px;line-height:1.8;color:var(--text-primary);">' + topRec + '</div>' +
+    '<div style="font-size:11px;color:var(--text-muted);margin-top:3px;">面料：' + materialSuggestions[0] + '</div>' +
     '</div>';
 
   // 下装
@@ -1614,47 +1941,416 @@ function getClothingAdvice(xiList, weather, noCity, gender) {
     '<div style="font-weight:700;font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">' +
     '<span style="font-size:11px;color:var(--accent);">👖</span>下装推荐' +
     '</div>' +
-    '<div style="font-size:13px;line-height:1.8;color:var(--text-primary);">' + bottomRecs.join(' / ') + '</div>' +
+    '<div style="font-size:13px;line-height:1.8;color:var(--text-primary);">' + bottomRec + '</div>' +
     '</div>';
 
   // 连衣裙（仅女性）
-  if (!isMale) {
+  if (!isMale && onePieceRec) {
     outfitHtml += '<div style="margin:8px 0;">' +
       '<div style="font-weight:700;font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">' +
-      '<span style="font-size:11px;color:var(--accent);">👗</span>或连衣裙' +
+      '<span style="font-size:11px;color:var(--accent);">👗</span>或换连衣裙' +
       '</div>' +
-      '<div style="font-size:13px;line-height:1.8;color:var(--text-primary);">' + onePiece + '</div>' +
+      '<div style="font-size:13px;line-height:1.8;color:var(--text-primary);">' + onePieceRec + '</div>' +
       '</div>';
   }
 
-  // 鞋子
+  // 鞋款：每行1款，前加○
   outfitHtml += '<div style="margin:8px 0;">' +
     '<div style="font-weight:700;font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">' +
-    '<span style="font-size:11px;color:var(--accent);">👟</span>鞋子推荐' +
+    '<span style="font-size:11px;color:var(--accent);">👟</span>鞋款推荐' +
     '</div>' +
-    '<div style="font-size:13px;line-height:1.8;color:var(--text-primary);">' + shoeRecs.join(' / ') + '</div>' +
+    shoeRecs.map(s =>
+      '<div style="font-size:13px;line-height:1.9;color:var(--text-primary);">○ ' + s.color + '·' + s.style + '</div>'
+    ).join('') +
     '</div>';
 
-  // 配饰（多个，不去重）
+  // 配饰：手链+耳饰，品种+色系描述
   outfitHtml += '<div style="margin:8px 0;">' +
     '<div style="font-weight:700;font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">' +
     '<span style="font-size:11px;color:var(--accent);">💍</span>配饰推荐' +
     '</div>' +
-    '<div style="font-size:13px;line-height:1.8;color:var(--text-primary);">' + accRecs.join(' / ') + '</div>' +
-    '<div style="font-size:11px;color:var(--text-muted);margin-top:3px;">没有类似的配饰也没关系，干干净净的你也很好～</div>' +
+    '<div style="font-size:13px;line-height:1.9;color:var(--text-primary);">' +
+    accRecs.map(a =>
+      '<div style="margin-bottom:4px;"><span style="color:var(--text-muted);font-size:11px;">' + a.type + ' · </span><strong>' + a.name + '</strong></div>'
+    ).join('') +
+    '</div>' +
+    '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">没有也没关系，素颜的你同样好看～</div>' +
     '</div>';
 
   return {
     weatherTag: weather ? weatherCodeToText(weather.weatherCode) + ' · ' + weather.minTemp + '～' + weather.maxTemp + '℃' : null,
-    text: '<div>今天五行喜<strong>' + xiList.join('、') + '</strong>，适合穿<strong>' + colorDesc + '</strong>系的衣服哦。</div>' +
+    text: '<div>今天适合穿<strong>' + colorDesc + '</strong>系的衣服出门。</div>' +
       (weather ? '<div style="margin:8px 0;">' + weatherHtml + '</div>' : '') +
       '<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">' + outfitHtml + '</div>'
   };
 }
 
 // ============================================================
-// UI
+// 时辰身心状态数据库
+// 12时辰 × 5喜用 × 情绪+身体，不含命理术语
 // ============================================================
+const SHICHEN_INFO = [
+  { name: '子时', time: '23:00—01:00', hour: 23, endHour: 1 },
+  { name: '丑时', time: '01:00—03:00', hour: 1, endHour: 3 },
+  { name: '寅时', time: '03:00—05:00', hour: 3, endHour: 5 },
+  { name: '卯时', time: '05:00—07:00', hour: 5, endHour: 7 },
+  { name: '辰时', time: '07:00—09:00', hour: 7, endHour: 9 },
+  { name: '巳时', time: '09:00—11:00', hour: 9, endHour: 11 },
+  { name: '午时', time: '11:00—13:00', hour: 11, endHour: 13 },
+  { name: '未时', time: '13:00—15:00', hour: 13, endHour: 15 },
+  { name: '申时', time: '15:00—17:00', hour: 15, endHour: 17 },
+  { name: '酉时', time: '17:00—19:00', hour: 17, endHour: 19 },
+  { name: '戌时', time: '19:00—21:00', hour: 19, endHour: 21 },
+  { name: '亥时', time: '21:00—23:00', hour: 21, endHour: 23 }
+];
+
+// 时辰 × 喜用五行的身心状态
+const SHICHEN_STATE = {
+  '子时': {
+    '木': {
+      emotion: '这个点你可能睡不着在刷手机，或者脑子里转着今天没想完的事。其实睡前的那点思绪挺宝贵的，不用强行关闭，但别让它滚雪球。',
+      body: '腰和眼睛容易酸，放下手机，侧躺几分钟让脊柱放松。睡前喝半杯温水，比任何护肤品都补。'
+    },
+    '火': {
+      emotion: '你可能有点燥，脑子还在转但已经很困了，那种拧巴的感觉。先闭上眼睛不强迫睡着，只是让眼睛休息。',
+      body: '心跳可能比较快，深呼吸四秒、屏气四秒、呼出四秒，做三组，神经会安静下来。'
+    },
+    '土': {
+      emotion: '睡眠里容易想事情，今天有没有什么没做完的？把它写在便条纸上放到一边，告诉自己明天再说，这个小动作真的有用。',
+      body: '腹部容易发胀，避免睡前吃东西。如果已经吃了，左侧躺，帮助消化。'
+    },
+    '金': {
+      emotion: '这个时段你可能进入了"深度独处"模式，各种感受都会比白天更清晰。不用急着解决它们，安静感受就好。',
+      body: '呼吸道敏感，空气太干的话，在床边放一杯水或者开加湿器睡觉。'
+    },
+    '水': {
+      emotion: '思维活跃，适合在睡前想一想近期的规划和方向。但想完了要放下，别带着问题入睡。',
+      body: '肾脏在这个时段需要充分休息。尽量在这个时段进入睡眠，比任何保健品都有效。'
+    }
+  },
+  '丑时': {
+    '木': {
+      emotion: '这时候还没睡的话，情绪可能有点低。不需要和自己较劲，不如听一首轻柔的歌，让身体自然放松。',
+      body: '肝脏在这个时段最忙碌，减少酒精和高脂食物的摄入，让它好好工作。已经睡着的话，这是最深度睡眠的时段。'
+    },
+    '火': {
+      emotion: '熬到这个时间点的话，第二天情绪会比较难稳定。如果现在能睡，马上睡。要做的事明天再说，睡着就是最好的决策。',
+      body: '身体在修复心脏和血液系统，不睡觉等于在扣血。感觉胸口有点闷是正常的，深呼吸，横膈膜放松。'
+    },
+    '土': {
+      emotion: '凌晨的孤独感最重，不建议在这个时段刷社交媒体，容易陷入比较和焦虑。关掉手机，就算睡不着也好好躺着。',
+      body: '消化系统在休眠，不要在这个时段进食。如果饿了，喝一杯热牛奶是最温和的选择。'
+    },
+    '金': {
+      emotion: '这个时段脑子可能格外清醒，有创意或者想法涌出来。把它们记录一下，但不要开始执行——把能量留到白天。',
+      body: '肺部在深度自我修复，保持均匀呼吸，不要抽烟或置身烟雾环境。'
+    },
+    '水': {
+      emotion: '如果你还醒着，可能是因为某件事放不下。试着把这件事用一句话写下来，暂时搁置，给自己一个"明天再说"的许可。',
+      body: '这是肾脏最需要休息的时段，熬夜对肾影响最直接。实在睡不着，就平躺深呼吸，对身体也比坐着强。'
+    }
+  },
+  '寅时': {
+    '木': {
+      emotion: '如果是被闹钟叫醒，给自己几分钟清醒时间再起床。脑子从睡眠中出来需要缓冲，不要立刻看手机。',
+      body: '肺气开始运作，深呼吸几次非常有用，相当于给肺做了一次晨间热身。如果在这个时段自然醒，可以起来喝杯温水。'
+    },
+    '火': {
+      emotion: '这个时段起来工作的人，早上头两小时效率会非常高，但情绪也会起伏。先不要看消息，专注做一件事。',
+      body: '体温还在低位，起床时动作慢一点，避免头晕。穿上一件轻薄外套，别让心脏在冷刺激下应激。'
+    },
+    '土': {
+      emotion: '凌晨还在工作或者已经提前醒来的你，今天的主题是"一件一件来"。脑子里有太多事排队，但胃口和精力都有限，别贪多。',
+      body: '这时候吃东西对消化系统是负担。如果感到饿，可以吃几颗坚果，避免过量。'
+    },
+    '金': {
+      emotion: '自然早醒是一件好事，不用强迫自己继续睡。给自己倒杯水，静静坐一会儿，一天从这份安静开始其实挺好的。',
+      body: '呼吸道在这个时段开始活跃，适合做几次深呼吸或者在窗边吸一口新鲜空气。'
+    },
+    '水': {
+      emotion: '早起的人，今天思维会很清晰，适合在这个安静时段想清楚最重要的一件事。但别把所有计划都堆在今天。',
+      body: '膀胱在这个时段开始活跃，如果有尿意不要憋着。起床喝温水，给代谢开个好头。'
+    }
+  },
+  '卯时': {
+    '木': {
+      emotion: '一天刚开始，你的状态可能比你以为的要好。别在出门前刷太多坏消息，保留一点清醒的积极感，今天会用到。',
+      body: '大肠在排毒，有排便意欲就去，不要憋着。早餐以清淡为主，给身体一个温柔的开始。'
+    },
+    '火': {
+      emotion: '今天出门前的心情会影响你一整天的状态。花两分钟做一件让你开心的事——听一首好听的歌，或者看一眼喜欢的植物。',
+      body: '血液循环开始加速，适合做一点轻柔的拉伸。不要一起床就喝咖啡，先喝温水，给心脏缓冲时间。'
+    },
+    '土': {
+      emotion: '早餐不要跳过，你的专注力很大程度上由早餐决定。不用吃得多，吃得暖就够了。',
+      body: '胃开始工作，是吃早饭的最佳时段。选温热、好消化的食物，今天一整天都会感觉能量充沛。'
+    },
+    '金': {
+      emotion: '早上你可能比较敏感，别在出门前处理复杂的情绪问题。把当天需要做的事在脑子里过一遍，清晰感会让你踏实。',
+      body: '大肠排毒的时段，保持规律的如厕习惯非常有价值。喝一杯温水，配合自然的身体节奏。'
+    },
+    '水': {
+      emotion: '今天你可能有点不想开口说话，这不是冷漠，只是早上需要一点安静过渡。给自己15分钟的独处，然后再进入社交模式。',
+      body: '肾脏补充能量的时段，早餐里加一点黑色食物（黑米粥、黑芝麻糊）会让你感觉更有劲。'
+    }
+  },
+  '辰时': {
+    '木': {
+      emotion: '上午是你状态最好的时段之一，把最难啃的事放在这里解决。不要在这个时间段处理那些消耗你但不重要的事。',
+      body: '胃开始充分工作，这时候消化吸收效率高。如果早饭吃得少，现在可以补一点坚果或水果。'
+    },
+    '火': {
+      emotion: '这个时段你的表达欲和社交能量都在线，适合开会、沟通、或者发出那封一直拖着的邮件。',
+      body: '新陈代谢加速，如果在室内，注意通风。运动的话，现在走15分钟比午睡前走一小时效果好。'
+    },
+    '土': {
+      emotion: '上午你的处理能力很强，但也很容易分心。关掉不必要的通知，专注做一件事，效率会比你预期高很多。',
+      body: '脾胃都在工作，这个时段不要喝冷饮，会直接影响消化和下午的精力状态。'
+    },
+    '金': {
+      emotion: '上午你会对细节特别敏感，适合做需要精确度的工作——写方案、查数据、校对文件。但别跟自己过不去，有一点误差不是世界末日。',
+      body: '脾胃运化时段，饮食规律对今天状态影响最大。不要饿着，也不要撑着，七分饱刚刚好。'
+    },
+    '水': {
+      emotion: '这个时段你的逻辑思维最强，适合做需要分析和判断的事。把今天最重要的一个决定放在这里做。',
+      body: '代谢开始启动，多喝水，把今天的水量在上午喝掉一半。如果有头脑昏沉的感觉，可能就是缺水。'
+    }
+  },
+  '巳时': {
+    '木': {
+      emotion: '上午的节奏到这里开始趋稳，适合做一些需要创意或协作的事。如果有重要谈话，今天上午晚些时候发起，对方也比较容易接受。',
+      body: '心脏开始进入高效工作期，适当走动或做几个深蹲，激活下半身循环，下午不容易困。'
+    },
+    '火': {
+      emotion: '这个时段你的热情和能量都很足，但也容易过度承诺。答应别人事情之前先想一下自己的精力，今天你的下午可能比预期累。',
+      body: '体温升到一天中最舒适的区间，适合进行需要活力的工作或者去健身房。注意补充水分，出汗增多。'
+    },
+    '土': {
+      emotion: '上午的事情如果还没收尾，现在是最后的高效时段。把它们整理完再吃午饭，下午会轻松很多。',
+      body: '脾胃在辅助消化，别久坐，每隔45分钟站起来走几分钟，午后不容易发困。'
+    },
+    '金': {
+      emotion: '这个时段你的判断力很强，适合处理需要决策和执行的工作。如果有什么要给人反馈的，现在说比较直接有效。',
+      body: '心脏负荷开始增加，如果有心跳加速或轻微胸闷，停下来做三次深呼吸，然后喝一杯水。'
+    },
+    '水': {
+      emotion: '上午高效区的末段，把最后一件重要的事做完。午饭前给自己一个"已完成"的小奖励，哪怕只是一颗糖。',
+      body: '心脏运作旺盛，适合安排运动。如果今天不打算运动，做几个伸展，让身体在午饭前松弛下来。'
+    }
+  },
+  '午时': {
+    '木': {
+      emotion: '午饭时间，别在这时候谈正经事。放下手机，好好吃一顿，这是一天里最该给自己留的30分钟。',
+      body: '心脏运作最旺盛，午饭不要吃太重，清淡为主。午休20分钟以内可以恢复精力，超过30分钟反而会更困。'
+    },
+    '火': {
+      emotion: '你的能量在正午达到高点，可能有点坐不住，思维跳跃。如果有重要的事要商量，午饭时间聊比开正式会议效果好。',
+      body: '体温高峰期，出汗正常。多喝水，吃饭别太急，细嚼慢咽，给身体时间感受饱足感。'
+    },
+    '土': {
+      emotion: '午饭一定要吃，跳过午饭会让你下午的专注力大打折扣。不用吃多，一顿温热的、有饱腹感的饭就够了。',
+      body: '心脏和脾胃都在工作，饮食尽量温热，少冰饮。饭后散步10分钟是这个时段最高性价比的健康习惯。'
+    },
+    '金': {
+      emotion: '午饭后你可能有点情绪低谷，不用强迫自己立刻高效。20分钟的休息让脑子重启，比硬撑两小时的结果好。',
+      body: '心脏负担最重的时段，不适合激烈运动。午休是最好的选择，帮助下午的专注力和情绪稳定。'
+    },
+    '水': {
+      emotion: '午间你可能有一点沉默和内收，这是正常的充电状态。独自吃饭也没什么不好，让大脑休息一下。',
+      body: '身体开始需要修整，午休哪怕只有15分钟的闭目养神，下午的脑子都会比不休息清醒很多。'
+    }
+  },
+  '未时': {
+    '木': {
+      emotion: '下午一点，睡意可能来了。不要强撑，一个20分钟的小睡或者闭目休息，比三杯咖啡有效。醒来做几个深呼吸，状态马上不一样。',
+      body: '消化系统在工作，饭后不要立刻坐下不动，站起来走一走对消化和血糖稳定都好。'
+    },
+    '火': {
+      emotion: '你下午的能量可能比较分散，容易一件事做到一半被另一件事打断。试着把下午的任务清单缩减到两件，专注度比什么都强。',
+      body: '脾胃开始消化午饭，喝一点温茶（不是冰的）帮助消化，同时能防止下午犯困。'
+    },
+    '土': {
+      emotion: '这个时段很适合做一些例行但需要认真的事：整理文件、回复消息、做每周总结。需要创意或决策的事，放到明天上午。',
+      body: '小肠吸收养分的时段，下午不要吃太多零食，会打乱吸收节奏，下午脑子容易昏沉。'
+    },
+    '金': {
+      emotion: '你可能有点钻牛角尖，把一个细节反复看了好几遍。停下来，先做别的，再回来看，会发现不是什么大问题。',
+      body: '消化系统工作，适合饭后散步。这个时段吃糖或甜食会让血糖起伏，容易困，不如喝一杯茶。'
+    },
+    '水': {
+      emotion: '下午你可能有点内耗，把事情想得比实际复杂。把今天剩下要做的事写下来，一件一件来，不要在脑子里打架。',
+      body: '膀胱开始需要排毒，多喝水，有尿意不要憋。午后水分补充不够会让注意力下降很快。'
+    }
+  },
+  '申时': {
+    '木': {
+      emotion: '下午三点后，你的状态会有一个小回升。适合处理那些需要耐心和细心的事，比如整理数据、写长文、或者做个项目复盘。',
+      body: '膀胱排毒高峰期，多喝水。如果感到轻微头疼，很可能是下午水喝少了，补水比吃药有用。'
+    },
+    '火': {
+      emotion: '下午的社交能量有点回升，适合见人、开会、或者处理需要沟通的事。但注意不要话太多，今天你的表达欲很强，说多了容易让人觉得压迫。',
+      body: '代谢活跃，适合下午茶时间来一杯温饮。如果今天有运动计划，下午4点是比早晨更适合的时间点。'
+    },
+    '土': {
+      emotion: '下午是你专注力比较好的时段，比上午的精力更稳定。把今天还没完成的主要工作放在这里冲刺。',
+      body: '膀胱排毒，需要补充水分。下午3-5点喝够水，晚上的睡眠质量会明显提升。'
+    },
+    '金': {
+      emotion: '下午你的执行力比上午稳，适合把今天计划清单里的事逐项推进。不用追求完美，完成比完美重要。',
+      body: '身体在这个时段弹性好，适合去健身或者散步。下午运动后的精神状态会维持到晚上。'
+    },
+    '水': {
+      emotion: '这个时段你的直觉很准，适合做一些需要判断的工作。如果下午有个会要让你拍板，现在是最好的时机。',
+      body: '膀胱运作，多喝水。如果有久坐的情况，每隔一小时站起来走动，防止下半身血液循环受阻。'
+    }
+  },
+  '酉时': {
+    '木': {
+      emotion: '下班路上，给自己从工作模式切换出来的时间。不要在路上继续处理工作消息，让大脑有一段"空白缓冲区"，今晚的状态会好很多。',
+      body: '肾脏开始活跃，傍晚是补充水分的好时间。如果今天走路少，出门买个东西或者绕路回家都算活动。'
+    },
+    '火': {
+      emotion: '傍晚你的情绪感受力最强，容易被小事触动——可能是一首好听的歌，可能是路边一家好看的小店。这种敏感是礼物，好好享受。',
+      body: '肾脏工作，适合傍晚散步或轻运动。吃晚饭不要太晚也不要太重，7点前吃完睡眠会好很多。'
+    },
+    '土': {
+      emotion: '你可能有点累，今天事情做了不少但总感觉还有没做完的。允许今天就到这里，明天再说。你已经足够努力了。',
+      body: '傍晚消化能力开始下降，晚饭以清淡为主，量少一点比较好。这顿饭吃得清淡，整晚都会很舒服。'
+    },
+    '金': {
+      emotion: '下班后你可能会有一点点沮丧或者空落落的，这是一天高强度专注后的自然反应。给自己一个小仪式感：换衣服、洗脸，切换到"个人时间"模式。',
+      body: '呼吸系统开始需要休息，如果今天说话多或者空气质量差，回家后喝一点温润的饮品，比如梨水或银耳汤。'
+    },
+    '水': {
+      emotion: '傍晚你可能有点想一个人待着，不想跟人说话。这完全正常，不是社交障碍，就是今天的你需要安静充电。',
+      body: '肾脏补充能量，晚上少喝咖啡和浓茶，让肾脏好好工作。泡脚20分钟能很好地促进肾经循环。'
+    }
+  },
+  '戌时': {
+    '木': {
+      emotion: '晚上适合做轻松的事：看一集剧、读几页书、或者和喜欢的人聊聊天。今天白天的事情已经结束了，不要在晚上给自己加班。',
+      body: '心包经活跃，是情绪最需要被照顾的时段。泡个热水澡、听轻松的音乐，都会让神经系统在睡前放松。'
+    },
+    '火': {
+      emotion: '你的社交能量在晚上还在线，这时候聊天、聚会都很适合。但注意控制时间，别聊太晚影响睡眠，明天的你会后悔的。',
+      body: '心包经需要放松，减少屏幕亮度，不要再打游戏或看刺激性内容，让神经系统开始降温。'
+    },
+    '土': {
+      emotion: '晚上是你反思和整理的好时间，可以把今天发生的事简单在脑子里梳理一遍，有什么让你不舒服的，接纳它，然后放下。',
+      body: '消化系统在休整，晚上9点之后不要再进食，让身体用这段时间专心修复。'
+    },
+    '金': {
+      emotion: '你晚上的思维可能特别清楚，容易想到白天没想到的方案。记录下来很好，但不要在晚上开始执行——把灵感留到明天，更容易落地。',
+      body: '心包经活跃，做几个简单的颈肩拉伸，释放白天积累的紧张感。早点睡比任何护肤品都有效。'
+    },
+    '水': {
+      emotion: '晚上你的创作灵感或者思维往往很活跃，适合写写日记、做做计划或者读一点感兴趣的东西。但给自己设一个"停止时间"，别让大脑一直运转。',
+      body: '三焦经开始调节全身，泡脚、热敷都很有用。晚上11点前躺下，是对明天的自己最好的投资。'
+    }
+  },
+  '亥时': {
+    '木': {
+      emotion: '准备睡觉前，把明天要做的最重要的一件事写下来，放到看得见的地方。脑子卸下这个任务，今晚会睡得更踏实。',
+      body: '三焦经和胆经准备进入修复状态，尽量在11点前关灯躺下。睡前半小时不看手机比任何睡眠辅助都有效。'
+    },
+    '火': {
+      emotion: '睡前你的思绪可能还很活跃。用一个简单的放松法：在脑子里把今天发生的事一件件感谢并关掉，像关灯一样，一件一件来。',
+      body: '身体开始进入修复阶段，减少光线刺激。把手机调成护眼模式或者直接放到够不着的地方，睡眠质量立刻上升。'
+    },
+    '土': {
+      emotion: '睡前不要再刷社交媒体，那些信息对今晚没有任何用处。换成听一段轻音乐或者读几页书，比看手机入睡快一倍。',
+      body: '三焦经开始平衡全身气血，今晚睡够7-8小时，明天的你会感谢今晚早睡的决定。'
+    },
+    '金': {
+      emotion: '睡前的你可能有点完美主义倾向，觉得今天有什么没做好。放下它。明天是新的一天，今晚的任务只有一个：好好睡觉。',
+      body: '肺和三焦都在修复，保持卧室通风，不要盖太厚，均匀呼吸，让睡眠自然来临。'
+    },
+    '水': {
+      emotion: '睡前你可能会回想一些事，包括好的和不好的。允许它们在脑海里漂过，不用抓住，不用解决，它们会自己过去的。',
+      body: '肾脏和三焦都在准备夜间修复，这是对肾最友好的时段。泡完脚后躺下，身体很快会放松下来。'
+    }
+  }
+};
+
+// 获取当前时辰索引
+function getCurrentShichenIndex() {
+  const h = new Date().getHours();
+  if (h >= 23 || h < 1) return 0;
+  if (h < 3) return 1;
+  if (h < 5) return 2;
+  if (h < 7) return 3;
+  if (h < 9) return 4;
+  if (h < 11) return 5;
+  if (h < 13) return 6;
+  if (h < 15) return 7;
+  if (h < 17) return 8;
+  if (h < 19) return 9;
+  if (h < 21) return 10;
+  return 11;
+}
+
+// 渲染时辰卡片
+function renderShichenCard(primaryXi, containerId) {
+  const currentIdx = getCurrentShichenIndex();
+
+  function getContentHtml(idx) {
+    const sc = SHICHEN_INFO[idx];
+    const stateData = SHICHEN_STATE[sc.name];
+    const state = (stateData && (stateData[primaryXi] || stateData['水'])) || { emotion: '暂无', body: '暂无' };
+    return '<div class="shichen-content">' +
+      '<div class="shichen-name">' + sc.name +
+        '<span class="shichen-time-badge">' + sc.time + '</span>' +
+        (idx === currentIdx ? '<span style="font-size:11px;color:var(--accent);font-weight:700;margin-left:4px;">← 现在</span>' : '') +
+      '</div>' +
+      '<div class="shichen-label">心理状态</div>' +
+      '<div class="shichen-emotion">' + state.emotion + '</div>' +
+      '<div class="shichen-label">身体状态</div>' +
+      '<div class="shichen-body">' + state.body + '</div>' +
+    '</div>';
+  }
+
+  const tabsHtml = SHICHEN_INFO.map((sc, idx) =>
+    '<button class="shichen-tab' + (idx === currentIdx ? ' current-time' : '') + '" ' +
+    'onclick="switchShichen(' + idx + ',\'' + containerId + '\',\'' + primaryXi + '\')" ' +
+    'id="' + containerId + '-tab-' + idx + '">' +
+    sc.name.replace('时','') + '</button>'
+  ).join('');
+
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML =
+    '<div class="shichen-title">✦ 今日时辰身心状态</div>' +
+    '<div class="shichen-subtitle">每个时辰里，你的身体和情绪都在说话。点击时辰查看不同时段的状态建议。</div>' +
+    '<div class="shichen-tabs">' + tabsHtml + '</div>' +
+    '<div id="' + containerId + '-content">' + getContentHtml(currentIdx) + '</div>';
+}
+
+function switchShichen(idx, containerId, primaryXi) {
+  const currentIdx = getCurrentShichenIndex();
+  SHICHEN_INFO.forEach(function(_, i) {
+    var btn = document.getElementById(containerId + '-tab-' + i);
+    if (!btn) return;
+    btn.className = 'shichen-tab';
+    if (i === currentIdx) btn.classList.add('current-time');
+    if (i === idx && i !== currentIdx) btn.classList.add('active');
+  });
+  const sc = SHICHEN_INFO[idx];
+  const stateData = SHICHEN_STATE[sc.name];
+  const state = (stateData && (stateData[primaryXi] || stateData['水'])) || { emotion: '暂无', body: '暂无' };
+  document.getElementById(containerId + '-content').innerHTML =
+    '<div class="shichen-content">' +
+    '<div class="shichen-name">' + sc.name +
+      '<span class="shichen-time-badge">' + sc.time + '</span>' +
+      (idx === currentIdx ? '<span style="font-size:11px;color:var(--accent);font-weight:700;margin-left:4px;">← 现在</span>' : '') +
+    '</div>' +
+    '<div class="shichen-label">心理状态</div>' +
+    '<div class="shichen-emotion">' + state.emotion + '</div>' +
+    '<div class="shichen-label">身体状态</div>' +
+    '<div class="shichen-body">' + state.body + '</div>' +
+    '</div>';
+}
+
+// ===================== 时辰模块END ==========================
 function switchPage(page) {
   document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
@@ -1878,6 +2574,9 @@ function renderResult(data) {
     <ul class="dongshelj-list">
       ${dsList.map(item => `<li><span class="dongshelj-icon">${svgIcon('icon-broom','#3b7dd8',16)}</span>${item}</li>`).join('')}
     </ul>`;
+
+  // 时辰身心状态模块
+  renderShichenCard(primaryXi, 'shichen-card');
 
   // ===== 明日运势预览 =====
   renderTomorrow(bazi, xiyong, weatherData, gender, year, month, day);
